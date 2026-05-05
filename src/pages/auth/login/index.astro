@@ -1,7 +1,9 @@
 ---
 import SiteLayout from "../../../layouts/SiteLayout.astro";
+import { LoginForm } from "../../../components/client/LoginForm";
 ---
 
 <SiteLayout>
   <h1>Login</h1>
+  <LoginForm client:load />
 </SiteLayout>
