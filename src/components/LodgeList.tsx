@@ -3,68 +3,54 @@ import type { SyntheticEvent } from "react";
 import { useState } from "react";
 
 type Lodge = {
-  id: string | number;
+  id: number | string;
   name: string;
-  pending?: boolean;
 };
 
 type LodgeListProps = {
   initialLodges: Lodge[];
 };
 
-export default function LodgeList({ initialLodges }: LodgeListProps) {
+export function LodgeList({ initialLodges }: LodgeListProps) {
   const [lodges, setLodges] = useState(initialLodges);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   async function handleCreate(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
-    setError("");
+    setError(null);
 
     const form = event.currentTarget;
-    const formData = new FormData(form);
-    const name = formData.get("name");
+    const name = new FormData(form).get("name") as string;
 
-    if (typeof name !== "string" || !name.trim()) {
-      return;
-    }
-
-    const trimmedName = name.trim();
-    const temporaryId = `temporary-${crypto.randomUUID()}`;
-    const temporaryLodge = {
-      id: temporaryId,
-      name: trimmedName,
-      pending: true,
-    };
+    const tempId = `temp-${crypto.randomUUID()}`;
+    const temporaryLodge = { id: tempId, name, pending: true };
 
     setLodges((currentLodges) => [...currentLodges, temporaryLodge]);
+
     form.reset();
 
-    const result = await actions.createLodge({ name: trimmedName });
+    const { data, error } = await actions.createLodge({ name });
 
-    if (result.error) {
+    if (error) {
       setLodges((currentLodges) =>
-        currentLodges.filter((lodge) => lodge.id !== temporaryId),
+        currentLodges.filter((lodge) => lodge.id !== tempId),
       );
-      setError(result.error.message || "Could not create lodge.");
-      return;
+      setError(error.message || "Could not create lodge.");
+    } else {
+      setLodges((prev) =>
+        prev.map((lodge) => (lodge.id === tempId ? data : lodge)),
+      );
     }
-
-    setLodges((currentLodges) =>
-      currentLodges.map((lodge) =>
-        lodge.id === temporaryId ? result.data : lodge,
-      ),
-    );
   }
 
-  async function handleDelete(lodgeToDelete: Lodge) {
-    setError("");
+  async function handleDelete(id: number) {
+    setError(null);
 
     const previousLodges = lodges;
-    setLodges((currentLodges) =>
-      currentLodges.filter((lodge) => lodge.id !== lodgeToDelete.id),
-    );
 
-    const result = await actions.deleteLodge({ id: lodgeToDelete.id });
+    setLodges((prev) => prev.filter((lodge) => lodge.id !== id));
+
+    const result = await actions.deleteLodge({ id });
 
     if (result.error) {
       setLodges(previousLodges);
@@ -76,20 +62,19 @@ export default function LodgeList({ initialLodges }: LodgeListProps) {
     <>
       <form onSubmit={handleCreate}>
         <input type="text" name="name" placeholder="Lodge name" />
-        <button type="submit">Submit</button>
+        <button type="submit">Create</button>
       </form>
 
       {error && <p role="alert">{error}</p>}
 
       <ul>
-        {lodges.map((lodge) => (
-          <li key={lodge.id}>
-            <span>{lodge.name}</span>
-            {lodge.pending && <span> Saving...</span>}
+        {lodges.map(({ id, name }) => (
+          <li key={id}>
+            <span>{name}</span>
             <button
               type="button"
-              disabled={lodge.pending}
-              onClick={() => handleDelete(lodge)}
+              disabled={id.toString().startsWith("temp-")}
+              onClick={() => handleDelete(id as number)}
             >
               Delete
             </button>
