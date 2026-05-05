@@ -37,6 +37,8 @@ export function LodgeList({ initialLodges }: LodgeListProps) {
       setLodges((currentLodges) =>
         currentLodges.filter((lodge) => lodge.id !== tempId),
       );
+
+      // TODO: In case of unique violation the server returns "Unknown Error". Fix this in Supabase.
       setError(error.message || "Could not create lodge.");
     } else {
       setLodges((prev) =>
