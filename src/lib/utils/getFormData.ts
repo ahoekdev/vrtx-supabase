@@ -1,4 +1,4 @@
-export function getFormData(form: HTMLFormElement) {
+export function getFormData<T>(form: HTMLFormElement): T {
   const formData = new FormData(form);
 
   const data: Record<string, string> = {};
@@ -7,5 +7,5 @@ export function getFormData(form: HTMLFormElement) {
     data[key] = value.toString();
   }
 
-  return data;
+  return data as T;
 }
