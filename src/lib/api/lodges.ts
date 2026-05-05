@@ -5,11 +5,17 @@ export async function getLodges() {
 }
 
 export async function createLodge(name: string) {
-  const { error } = await supabase.from("lodges").insert({ name }).single();
+  const { data, error } = await supabase
+    .from("lodges")
+    .insert({ name })
+    .select("*")
+    .single();
 
   if (error) {
     throw error;
   }
+
+  return data;
 }
 
 export async function deleteLodge(id: string) {

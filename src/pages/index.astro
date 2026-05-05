@@ -1,5 +1,5 @@
 ---
-import { actions } from "astro:actions";
+import LodgeList from "../components/LodgeList";
 import { getLodges } from "../lib/api/lodges";
 
 export const prerender = false; // Not needed in 'server' mode
@@ -19,25 +19,6 @@ const lodges = await getLodges();
   <body>
     <h1>Astro</h1>
 
-    <form method="POST" action={actions.createLodge}>
-      <input type="text" name="name" placeholder="Lodge name" />
-      <button type="submit">Submit</button>
-    </form>
-
-    {
-      lodges.data && (
-        <ul>
-          {lodges.data.map((lodge) => (
-            <li>
-              <span>{lodge.name}</span>
-              <form method="POST" action={actions.deleteLodge}>
-                <input type="hidden" name="id" value={lodge.id} />
-                <button type="submit">Delete</button>
-              </form>
-            </li>
-          ))}
-        </ul>
-      )
-    }
+    <LodgeList client:load initialLodges={lodges.data ?? []} />
   </body>
 </html>

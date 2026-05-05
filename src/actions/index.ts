@@ -3,28 +3,30 @@ import { createLodge, deleteLodge } from "../lib/api/lodges";
 
 export const server = {
   createLodge: defineAction({
-    accept: "form",
-    async handler(formData) {
-      const name = formData.get("name");
+    accept: "json",
+    async handler(input) {
+      const name = input?.name;
 
       if (typeof name !== "string" || !name.trim()) {
         throw new Error("Missing lodge name.");
       }
 
-      await createLodge(name.trim());
+      return createLodge(name.trim());
     },
   }),
 
   deleteLodge: defineAction({
-    accept: "form",
-    async handler(formData) {
-      const id = formData.get("id");
+    accept: "json",
+    async handler(input) {
+      const id = input?.id;
 
-      if (typeof id !== "string" || !id) {
+      if ((typeof id !== "string" && typeof id !== "number") || !id) {
         throw new Error("Missing lodge id.");
       }
 
-      await deleteLodge(id);
+      await deleteLodge(String(id));
+
+      return { id };
     },
   }),
 };
