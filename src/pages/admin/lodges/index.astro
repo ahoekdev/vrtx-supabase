@@ -1,0 +1,14 @@
+---
+import LodgeList from "../../../components/LodgeList";
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { getLodges } from "../../../lib/api/lodges";
+
+export const prerender = false; // Not needed in 'server' mode
+
+const lodges = await getLodges();
+---
+
+<AdminLayout>
+  <h1>Lodges</h1>
+  <LodgeList client:load initialLodges={lodges.data ?? []} />
+</AdminLayout>
