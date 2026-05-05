@@ -32,16 +32,19 @@ const lodges = await getLodges();
     <form method="POST">
       <input type="text" name="name" placeholder="Lodge name" />
       <button type="submit">Submit</button>
-
-      {
-        lodges.data && (
-          <ul>
-            {lodges.data.map((lodge) => (
-              <li>{lodge.name}</li>
-            ))}
-          </ul>
-        )
-      }
     </form>
+
+    {
+      lodges.data && (
+        <ul>
+          {lodges.data.map((lodge) => (
+            <li>
+              <span>{lodge.name}</span>
+              <button>Delete</button>
+            </li>
+          ))}
+        </ul>
+      )
+    }
   </body>
 </html>
