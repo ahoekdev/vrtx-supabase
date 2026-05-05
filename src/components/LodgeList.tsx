@@ -1,5 +1,5 @@
 import { actions } from "astro:actions";
-import type { FormEvent } from "react";
+import type { SyntheticEvent } from "react";
 import { useState } from "react";
 
 type Lodge = {
@@ -16,7 +16,7 @@ export default function LodgeList({ initialLodges }: LodgeListProps) {
   const [lodges, setLodges] = useState(initialLodges);
   const [error, setError] = useState("");
 
-  async function handleCreate(event: FormEvent<HTMLFormElement>) {
+  async function handleCreate(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
 
