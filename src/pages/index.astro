@@ -1,4 +1,5 @@
 ---
+import { actions } from "astro:actions";
 import { createLodge, getLodges } from "../lib/api/lodges";
 
 export const prerender = false; // Not needed in 'server' mode
@@ -40,7 +41,10 @@ const lodges = await getLodges();
           {lodges.data.map((lodge) => (
             <li>
               <span>{lodge.name}</span>
-              <button>Delete</button>
+              <form method="POST" action={actions.deleteLodge}>
+                <input type="hidden" name="id" value={lodge.id} />
+                <button type="submit">Delete</button>
+              </form>
             </li>
           ))}
         </ul>
