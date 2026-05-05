@@ -1,6 +1,7 @@
 import { actions } from "astro:actions";
 import type { SyntheticEvent } from "react";
 import { useState } from "react";
+import { getFormData } from "../../lib/utils/getFormData";
 
 type Lodge = {
   id: number | string;
@@ -20,7 +21,8 @@ export function LodgeList({ initialLodges }: LodgeListProps) {
     setError(null);
 
     const form = event.currentTarget;
-    const name = new FormData(form).get("name") as string;
+
+    const { name } = getFormData(form);
 
     const tempId = `temp-${crypto.randomUUID()}`;
     const temporaryLodge = { id: tempId, name, pending: true };
