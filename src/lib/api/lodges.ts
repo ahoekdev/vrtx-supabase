@@ -17,3 +17,11 @@ export async function createLodge(name: string) {
       }
     });
 }
+
+export async function deleteLodge(id: string) {
+  const { error } = await supabase.from("lodges").delete().eq("id", id);
+
+  if (error) {
+    throw error;
+  }
+}
