@@ -1,7 +1,11 @@
 import type { SyntheticEvent } from "react";
 import { getFormData } from "../../lib/utils/getFormData";
 
-export function LoginForm() {
+interface LoginFormData {
+  type: "login" | "register";
+}
+
+export function LoginForm({ type }: LoginFormData) {
   function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -16,7 +20,7 @@ export function LoginForm() {
       <div>
         <input type="password" placeholder="Password" name="password" />
       </div>
-      <button type="submit">Login</button>
+      <button type="submit">{type === "login" ? "Login" : "Register"}</button>
     </form>
   );
 }

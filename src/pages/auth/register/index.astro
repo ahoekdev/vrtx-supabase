@@ -1,7 +1,10 @@
 ---
 import SiteLayout from "../../../layouts/SiteLayout.astro";
+import { LoginForm } from "../../../components/client/LoginForm";
 ---
 
 <SiteLayout>
   <h1>Register</h1>
+  <LoginForm client:load type="register" />
+  <a href="/auth/login">Already have an account? Login here.</a>
 </SiteLayout>
