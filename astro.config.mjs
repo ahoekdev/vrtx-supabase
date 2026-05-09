@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from "astro/config";
+import { defineConfig, sessionDrivers } from "astro/config";
 
 import netlify from "@astrojs/netlify";
 
@@ -10,4 +10,7 @@ export default defineConfig({
   adapter: netlify(),
   integrations: [react()],
   output: "server",
+  session: {
+    driver: sessionDrivers.netlifyBlobs(),
+  },
 });
