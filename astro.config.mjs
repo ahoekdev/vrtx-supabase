@@ -9,4 +9,5 @@ import react from "@astrojs/react";
 export default defineConfig({
   adapter: netlify(),
   integrations: [react()],
+  output: "server",
 });
