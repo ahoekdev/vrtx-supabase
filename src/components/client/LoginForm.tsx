@@ -1,15 +1,55 @@
-import type { SyntheticEvent } from "react";
+import { useState, type SyntheticEvent } from "react";
 import { getFormData } from "../../lib/utils/getFormData";
+import { actions } from "astro:actions";
+import type {
+  SignInWithPasswordCredentials,
+  SignUpWithPasswordCredentials,
+} from "@supabase/supabase-js";
 
 interface LoginFormData {
   type: "login" | "register";
 }
 
 export function LoginForm({ type }: LoginFormData) {
-  function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const [message, setMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    console.log(getFormData(event.currentTarget));
+  async function handleLogin(credentials: SignInWithPasswordCredentials) {
+    const res = await actions.login(credentials);
+
+    if (res.error) {
+      setMessage(res.error.message);
+      return;
+    }
+
+    setMessage("Logged in.");
+  }
+
+  async function handleRegister(credentials: SignUpWithPasswordCredentials) {
+    const res = await actions.register(credentials);
+
+    if (res.error) {
+      setMessage(res.error.message);
+      return;
+    }
+
+    setMessage("Check your email to confirm your account.");
+  }
+
+  async function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setMessage(null);
+
+    const formData = getFormData<{ email: string; password: string }>(
+      event.currentTarget,
+    );
+
+    if (type === "login") {
+      await handleLogin(formData);
+    } else {
+      await handleRegister(formData);
+    }
   }
 
   return (
@@ -20,7 +60,10 @@ export function LoginForm({ type }: LoginFormData) {
       <div>
         <input type="password" placeholder="Password" name="password" />
       </div>
-      <button type="submit">{type === "login" ? "Login" : "Register"}</button>
+      <button type="submit" disabled={isSubmitting}>
+        {type === "login" ? "Login" : "Register"}
+      </button>
+      {message ? <p>{message}</p> : null}
     </form>
   );
 }

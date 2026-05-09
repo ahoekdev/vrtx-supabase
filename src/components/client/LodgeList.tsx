@@ -22,7 +22,7 @@ export function LodgeList({ initialLodges }: LodgeListProps) {
 
     const form = event.currentTarget;
 
-    const { name } = getFormData(form);
+    const { name } = getFormData<{ name: string }>(form);
 
     const tempId = `temp-${crypto.randomUUID()}`;
     const temporaryLodge = { id: tempId, name, pending: true };
