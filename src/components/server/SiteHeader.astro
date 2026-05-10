@@ -1,0 +1,19 @@
+---
+const navLinks = [{ href: "/auth/login", label: "Login" }];
+---
+
+<header>
+  <a href="/">VRTX</a>
+
+  <nav>
+    <ul>
+      {
+        navLinks.map((link) => (
+          <li>
+            <a href={link.href}>{link.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>

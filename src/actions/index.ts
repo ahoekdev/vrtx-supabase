@@ -1,32 +1,11 @@
-import { defineAction } from "astro:actions";
-import { createLodge, deleteLodge } from "../lib/api/lodges";
+import { loginAction } from "./auth/loginAction";
+import { registerAction } from "./auth/registerAction";
+import { createLodgeAction } from "./lodge/createLodgeAction";
+import { deleteLodgeAction } from "./lodge/deleteLodgeAction";
 
 export const server = {
-  createLodge: defineAction({
-    accept: "json",
-    async handler(input) {
-      const name = input?.name;
-
-      if (typeof name !== "string" || !name.trim()) {
-        throw new Error("Missing lodge name.");
-      }
-
-      return createLodge(name.trim());
-    },
-  }),
-
-  deleteLodge: defineAction({
-    accept: "json",
-    async handler(input) {
-      const id = input?.id;
-
-      if ((typeof id !== "string" && typeof id !== "number") || !id) {
-        throw new Error("Missing lodge id.");
-      }
-
-      await deleteLodge(String(id));
-
-      return { id };
-    },
-  }),
+  createLodge: createLodgeAction,
+  deleteLodge: deleteLodgeAction,
+  login: loginAction,
+  register: registerAction,
 };

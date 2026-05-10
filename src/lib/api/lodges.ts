@@ -1,11 +1,18 @@
-import { supabase } from "../../supabase-client";
+import { type SupabaseClient } from "@supabase/supabase-js";
 
-export async function getLodges() {
-  return supabase.from("lodges").select("*").order("name", { ascending: true });
+export async function getLodges(client: SupabaseClient) {
+  return client.from("lodges").select("*").order("name", { ascending: true });
 }
 
-export async function createLodge(name: string) {
-  const { data, error } = await supabase
+interface CreateLodgeDTO {
+  name: string;
+}
+
+export async function createLodge(
+  { name }: CreateLodgeDTO,
+  client: SupabaseClient,
+) {
+  const { data, error } = await client
     .from("lodges")
     .insert({ name })
     .select("*")
@@ -18,8 +25,8 @@ export async function createLodge(name: string) {
   return data;
 }
 
-export async function deleteLodge(id: string) {
-  const { error } = await supabase.from("lodges").delete().eq("id", id);
+export async function deleteLodge(id: string, client: SupabaseClient) {
+  const { error } = await client.from("lodges").delete().eq("id", id);
 
   if (error) {
     throw error;
