@@ -1,19 +1,35 @@
 ---
-const navLinks = [{ href: "/auth/login", label: "Login" }];
+const navStart = [{ href: "/explore", label: "Explore" }];
+const navEnd = [
+  { href: "/auth/register", label: "Sign Up" },
+  { href: "/auth/login", label: "Sign In" },
+];
 ---
 
-<header>
-  <a href="/">VRTX</a>
-
-  <nav>
-    <ul>
-      {
-        navLinks.map((link) => (
-          <li>
-            <a href={link.href}>{link.label}</a>
-          </li>
-        ))
-      }
-    </ul>
-  </nav>
+<header class="h-16 border-b">
+  <div class="container mx-auto h-full px-4">
+    <nav class="flex justify-between items-center h-full">
+      <ul class="flex gap-4 items-center">
+        <li>
+          <a href="/" class="font-bold text-2xl">VRTX</a>
+        </li>
+        {
+          navStart.map((link) => (
+            <li>
+              <a href={link.href}>{link.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+      <ul class="flex gap-4">
+        {
+          navEnd.map((link) => (
+            <li>
+              <a href={link.href}>{link.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
 </header>

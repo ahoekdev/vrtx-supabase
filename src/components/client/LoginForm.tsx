@@ -53,14 +53,24 @@ export function LoginForm({ type }: LoginFormData) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <input type="text" placeholder="Email" name="email" />
-      </div>
-      <div>
-        <input type="password" placeholder="Password" name="password" />
-      </div>
-      <button type="submit" disabled={isSubmitting}>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+      <input
+        type="text"
+        placeholder="Email"
+        name="email"
+        className="border px-2 py-1"
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        name="password"
+        className="border px-2 py-1"
+      />
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="border px-2 py-1"
+      >
         {type === "login" ? "Login" : "Register"}
       </button>
       {message ? <p>{message}</p> : null}
