@@ -1,16 +1,16 @@
 import { ActionError, defineAction } from "astro:actions";
 import { handleError } from "../utils";
-import { supabase } from "../../supabase-client";
+import { createClient } from "../../lib/supabase";
 
 export const registerAction = defineAction({
   accept: "json",
-  async handler(input: { email: string; password: string }) {
-    if (!input.email || !input.password) {
-      throw new Error("Missing email or password.");
-    }
+  async handler(input: { email: string; password: string }, context) {
+    const client = createClient(context);
 
     try {
-      const res = await supabase.auth.signUp(input);
+      const res = await client.auth.signUp({
+        ...input,
+      });
 
       if (res.error) {
         if (res.error.status === 429) {
