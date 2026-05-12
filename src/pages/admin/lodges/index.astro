@@ -15,6 +15,8 @@ const lodges = await getLodges(client);
 ---
 
 <AdminLayout>
-  <h1>Lodges</h1>
-  <LodgeList client:load initialLodges={lodges.data ?? []} />
+  <div class="page-container">
+    <h1>Lodges</h1>
+    <LodgeList client:load initialLodges={lodges.data ?? []} />
+  </div>
 </AdminLayout>

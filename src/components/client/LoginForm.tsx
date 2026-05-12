@@ -6,6 +6,8 @@ import type {
   SignUpWithPasswordCredentials,
 } from "@supabase/supabase-js";
 
+import styles from "./LoginForm.module.css";
+
 interface LoginFormData {
   type: "login" | "register";
 }
@@ -53,24 +55,20 @@ export function LoginForm({ type }: LoginFormData) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+    <form onSubmit={handleSubmit} className={styles.form}>
       <input
         type="text"
         placeholder="Email"
         name="email"
-        className="border px-2 py-1"
+        className={styles.input}
       />
       <input
         type="password"
         placeholder="Password"
         name="password"
-        className="border px-2 py-1"
+        className={styles.input}
       />
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="border px-2 py-1"
-      >
+      <button type="submit" disabled={isSubmitting} className={styles.input}>
         {type === "login" ? "Login" : "Register"}
       </button>
       {message ? <p>{message}</p> : null}
