@@ -2,11 +2,10 @@
 import { LodgeList } from "../../../components/client/LodgeList";
 import AdminLayout from "../../../layouts/AdminLayout.astro";
 import { getLodges } from "../../../lib/api/lodges";
-import { createClient } from "../../../lib/supabase";
 
 export const prerender = false;
 
-const lodges = await getLodges(createClient(Astro));
+const lodges = await getLodges(Astro);
 ---
 
 <AdminLayout>

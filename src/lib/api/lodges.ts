@@ -1,7 +1,11 @@
 import { type SupabaseClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseContext } from "../supabase";
 
-export async function getLodges(client: SupabaseClient) {
-  return client.from("lodges").select("*").order("name", { ascending: true });
+export async function getLodges(context: SupabaseContext) {
+  return createClient(context)
+    .from("lodges")
+    .select("*")
+    .order("name", { ascending: true });
 }
 
 interface CreateLodgeDTO {

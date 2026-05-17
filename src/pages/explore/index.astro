@@ -1,5 +1,9 @@
 ---
 import SiteLayout from "../../layouts/SiteLayout.astro";
+import { getLodges } from "../../lib/api/lodges";
+
+const lodges = await getLodges(Astro);
+console.log(lodges);
 ---
 
 <SiteLayout>
