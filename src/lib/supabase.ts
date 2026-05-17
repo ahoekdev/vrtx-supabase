@@ -1,16 +1,12 @@
 import { createServerClient, parseCookieHeader } from "@supabase/ssr";
-import type { AstroCookies } from "astro";
+import type { APIContext } from "astro";
 
 const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
 const supabaseKey = import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
-export function createClient({
-  request,
-  cookies,
-}: {
-  request: Request;
-  cookies: AstroCookies;
-}) {
+type SupabaseContext = Pick<APIContext, "request" | "cookies">;
+
+export function createClient({ request, cookies }: SupabaseContext) {
   const cookieHeader = request.headers.get("Cookie") || "";
 
   return createServerClient(supabaseUrl, supabaseKey, {

@@ -6,12 +6,7 @@ import { createClient } from "../../../lib/supabase";
 
 export const prerender = false;
 
-const client = createClient({
-  request: Astro.request,
-  cookies: Astro.cookies,
-});
-
-const lodges = await getLodges(client);
+const lodges = await getLodges(createClient(Astro));
 ---
 
 <AdminLayout>
