@@ -4,7 +4,7 @@ import { useState } from "react";
 import { getFormData } from "../../lib/utils/getFormData";
 
 type Lodge = {
-  id: number | string;
+  id: string;
   name: string;
 };
 
@@ -46,7 +46,7 @@ export function LodgeList({ initialLodges }: LodgeListProps) {
     }
   }
 
-  async function handleDelete(id: number) {
+  async function handleDelete(id: string) {
     setError(null);
 
     const previousLodges = lodges;
@@ -77,7 +77,7 @@ export function LodgeList({ initialLodges }: LodgeListProps) {
             <button
               type="button"
               disabled={id.toString().startsWith("temp-")}
-              onClick={() => handleDelete(id as number)}
+              onClick={() => handleDelete(id)}
             >
               Delete
             </button>

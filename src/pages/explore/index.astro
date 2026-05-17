@@ -1,13 +1,40 @@
 ---
 import SiteLayout from "../../layouts/SiteLayout.astro";
 import { getLodges } from "../../lib/api/lodges";
+import { getStagesQuery } from "../../lib/api/stages";
 
 const lodges = await getLodges(Astro);
 console.log(lodges);
+
+const stages = await getStagesQuery(Astro);
 ---
 
 <SiteLayout>
   <div class="page-container">
     <h1>Explore</h1>
+    <h2>Stages</h2>
+    {
+      stages.data && (
+        <ul>
+          {stages.data.map(({ from, to }) => {
+            return (
+              <li>
+                <span>{from.name}</span>
+                <span> - </span>
+                <span>{to.name}</span>
+              </li>
+            );
+          })}
+        </ul>
+      )
+    }
   </div>
 </SiteLayout>
+
+<style>
+  ul {
+    li {
+      font-style: italic;
+    }
+  }
+</style>

@@ -5,6 +5,8 @@ export function getStagesQuery(context: SupabaseContext) {
 
   return client.from("stages").select(
     `
-id, to:to_lodge_id(name), from:from_lodge_id(name)`,
+  id,
+  from:lodges!from_lodge_id(name),
+  to:lodges!to_lodge_id(name)`,
   );
 }
