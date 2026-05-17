@@ -6,6 +6,8 @@ import type {
   SignUpWithPasswordCredentials,
 } from "@supabase/supabase-js";
 
+import styles from "./LoginForm.module.css";
+
 interface LoginFormData {
   type: "login" | "register";
 }
@@ -53,14 +55,20 @@ export function LoginForm({ type }: LoginFormData) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <input type="text" placeholder="Email" name="email" />
-      </div>
-      <div>
-        <input type="password" placeholder="Password" name="password" />
-      </div>
-      <button type="submit" disabled={isSubmitting}>
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <input
+        type="text"
+        placeholder="Email"
+        name="email"
+        className={styles.input}
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        name="password"
+        className={styles.input}
+      />
+      <button type="submit" disabled={isSubmitting} className={styles.input}>
         {type === "login" ? "Login" : "Register"}
       </button>
       {message ? <p>{message}</p> : null}

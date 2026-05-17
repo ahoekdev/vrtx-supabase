@@ -4,7 +4,24 @@ import { LoginForm } from "../../../components/client/LoginForm";
 ---
 
 <SiteLayout>
-  <h1>Login</h1>
-  <LoginForm client:load type="login" />
-  <a href="/auth/register">Don't have an account? Register here.</a>
+  <div class="page-container">
+    <h1>Login</h1>
+
+    <LoginForm client:load type="login" />
+    <a href="/auth/register" class="link"
+      >Don't have an account? Register here.</a
+    >
+  </div>
 </SiteLayout>
+
+<style>
+  .link {
+    display: block;
+    margin-top: 1rem;
+    color: #555;
+
+    &:hover {
+      color: #333;
+    }
+  }
+</style>

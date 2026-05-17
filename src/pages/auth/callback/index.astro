@@ -3,17 +3,13 @@ import SiteLayout from "../../../layouts/SiteLayout.astro";
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { createClient } from "../../../lib/supabase";
 
-const supabase = createClient({
-  request: Astro.request,
-  cookies: Astro.cookies,
-});
-
 const requestUrl = new URL(Astro.request.url);
+
 const token_hash = requestUrl.searchParams.get("token_hash");
 const type = requestUrl.searchParams.get("type") as EmailOtpType | null;
 
 if (token_hash && type) {
-  const { error } = await supabase.auth.verifyOtp({
+  const { error } = await createClient(Astro).auth.verifyOtp({
     token_hash,
     type,
   });
@@ -27,5 +23,7 @@ return Astro.redirect("/auth/login");
 ---
 
 <SiteLayout>
-  <p>Verifying your email...</p>
+  <div class="page-container">
+    <p>Verifying your email...</p>
+  </div>
 </SiteLayout>

@@ -6,15 +6,12 @@ import { createClient } from "../../../lib/supabase";
 
 export const prerender = false;
 
-const client = createClient({
-  request: Astro.request,
-  cookies: Astro.cookies,
-});
-
-const lodges = await getLodges(client);
+const lodges = await getLodges(createClient(Astro));
 ---
 
 <AdminLayout>
-  <h1>Lodges</h1>
-  <LodgeList client:load initialLodges={lodges.data ?? []} />
+  <div class="page-container">
+    <h1>Lodges</h1>
+    <LodgeList client:load initialLodges={lodges.data ?? []} />
+  </div>
 </AdminLayout>
