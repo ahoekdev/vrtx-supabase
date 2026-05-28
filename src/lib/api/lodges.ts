@@ -1,11 +1,24 @@
 import { type SupabaseClient } from "@supabase/supabase-js";
 import { createClient, type SupabaseContext } from "../supabase";
 
-export async function getLodges(context: SupabaseContext) {
-  return createClient(context)
+interface GetLodgesOptions {
+  limit?: number;
+}
+
+export function getLodges(
+  context: SupabaseContext,
+  options: GetLodgesOptions = {},
+) {
+  let query = createClient(context)
     .from("lodges")
     .select("*")
     .order("name", { ascending: true });
+
+  if (options.limit) {
+    query = query.limit(options.limit);
+  }
+
+  return query;
 }
 
 interface CreateLodgeDTO {

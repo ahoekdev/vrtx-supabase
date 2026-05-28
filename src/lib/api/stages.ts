@@ -1,12 +1,23 @@
 import { createClient, type SupabaseContext } from "../supabase";
 
-export function getStagesQuery(context: SupabaseContext) {
-  const client = createClient(context);
+interface GetStagesOptions {
+  limit?: number;
+}
 
-  return client.from("stages").select(
+export function getStages(
+  context: SupabaseContext,
+  options: GetStagesOptions = {},
+) {
+  let query = createClient(context).from("stages").select(
     `
   id,
   from:lodges!from_lodge_id(name),
   to:lodges!to_lodge_id(name)`,
   );
+
+  if (options.limit) {
+    query = query.limit(options.limit);
+  }
+
+  return query;
 }
