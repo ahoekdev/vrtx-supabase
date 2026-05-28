@@ -1,0 +1,18 @@
+insert into public.lodges (name)
+values
+  ('Gamshütte'),
+  ('Friesenberghaus'),
+  ('Olpererhütte'),
+  ('Furtschlaglhaus'),
+  ('Berliner Hütte'),
+  ('Greizer Hütte'),
+  ('Kasseler Hütte'),
+  ('Karl-von-Edel-Hütte'),
+  ('Starkenburger Hütte'),
+  ('Franz-Senn-Hütte'),
+  ('Neue Regensburger Hütte'),
+  ('Dresdner Hütte'),
+  ('Sulzenauhütte'),
+  ('Nürnberger Hütte'),
+  ('Bremer Hütte'),
+  ('Innsbrucker Hütte');
