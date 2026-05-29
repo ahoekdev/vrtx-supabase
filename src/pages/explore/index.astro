@@ -18,10 +18,10 @@ const tours = await getTours(Astro, { limit: 5 });
       {
         lodges.data && (
           <ul>
-            {lodges.data.map(({ name }) => {
+            {lodges.data.map(({ name, slug }) => {
               return (
                 <li>
-                  <span>{name}</span>
+                  <a href={`/lodges/${slug}`}>{name}</a>
                 </li>
               );
             })}
@@ -56,10 +56,10 @@ const tours = await getTours(Astro, { limit: 5 });
       {
         tours.data && (
           <ul>
-            {tours.data.map(({ name }) => {
+            {tours.data.map(({ name, slug }) => {
               return (
                 <li>
-                  <span>{name}</span>
+                  <a href={`/tours/${slug}`}>{name}</a>
                 </li>
               );
             })}

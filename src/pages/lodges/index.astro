@@ -11,10 +11,10 @@ const lodges = await getLodges(Astro);
     {
       lodges.data && (
         <ul>
-          {lodges.data.map(({ name }) => {
+          {lodges.data.map(({ name, slug }) => {
             return (
               <li>
-                <span>{name}</span>
+                <a href={`/lodges/${slug}`}>{name}</a>
               </li>
             );
           })}

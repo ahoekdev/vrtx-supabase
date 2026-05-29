@@ -21,7 +21,9 @@ const tourStages = await getTourStages(Astro, {
 
             return (
               <section>
-                <h2>{tour.name}</h2>
+                <h2>
+                  <a href={`/tours/${tour.slug}`}>{tour.name}</a>
+                </h2>
                 {
                   stages && stages.length > 0 && (
                     <ol>
