@@ -1,0 +1,46 @@
+---
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import { getTourBySlug, getTourStages } from "../../lib/api/tours";
+
+const slug = Astro.params.slug ?? "";
+const tour = await getTourBySlug(Astro, slug);
+
+if (!tour.data) {
+  Astro.response.status = 404;
+}
+
+const tourStages = tour.data
+  ? await getTourStages(Astro, { tourIds: [tour.data.id] })
+  : null;
+---
+
+<SiteLayout>
+  <div class="page-container">
+    {
+      tour.data ? (
+        <>
+          <h1>{tour.data.name}</h1>
+          <p>{tour.data.slug}</p>
+          {tourStages?.data && tourStages.data.length > 0 && (
+            <ol>
+              {tourStages.data.map(({ stage }) => {
+                return (
+                  <li>
+                    <span>{stage.from.name}</span>
+                    <span> - </span>
+                    <span>{stage.to.name}</span>
+                  </li>
+                );
+              })}
+            </ol>
+          )}
+        </>
+      ) : (
+        <>
+          <h1>Tour not found</h1>
+          <p>We could not find a tour for slug {slug}.</p>
+        </>
+      )
+    }
+  </div>
+</SiteLayout>
