@@ -13,3 +13,7 @@ Create migration:
 Deploy to remote:
 
 `supabase db push`
+
+Generate types:
+
+`npx supabase gen types typescript --local > database.types.ts`

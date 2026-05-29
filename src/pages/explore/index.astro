@@ -1,61 +1,77 @@
 ---
 import SiteLayout from "../../layouts/SiteLayout.astro";
 import { getLodges } from "../../lib/api/lodges";
-import { createClient } from "../../lib/supabase";
+import { getStages } from "../../lib/api/stages";
+import { getTours } from "../../lib/api/tours";
 
-const client = createClient(Astro);
-
-const lodges = await getLodges(Astro);
-
-const stages = await client.from("stages").select(
-  `
-  id,
-  from:lodges!from_lodge_id(name),
-  to:lodges!to_lodge_id(name)`,
-);
+const lodges = await getLodges(Astro, { limit: 5 });
+const stages = await getStages(Astro, { limit: 5 });
+const tours = await getTours(Astro, { limit: 5 });
 ---
 
 <SiteLayout>
   <div class="page-container">
     <h1>Explore</h1>
-    <h2>Lodges</h2>
-    {
-      lodges.data && (
-        <ul>
-          {lodges.data.map(({ name }) => {
-            return (
-              <li>
-                <span>{name}</span>
-              </li>
-            );
-          })}
-        </ul>
-      )
-    }
+    <section>
+      <h2>Lodges</h2>
+      <a href="/lodges">Show more</a>
+      {
+        lodges.data && (
+          <ul>
+            {lodges.data.map(({ name, slug }) => {
+              return (
+                <li>
+                  <a href={`/lodges/${slug}`}>{name}</a>
+                </li>
+              );
+            })}
+          </ul>
+        )
+      }
+    </section>
 
-    <h2>Stages</h2>
-    {
-      stages.data && (
-        <ul>
-          {stages.data.map(({ from, to }) => {
-            return (
-              <li>
-                <span>{from.name}</span>
-                <span> - </span>
-                <span>{to.name}</span>
-              </li>
-            );
-          })}
-        </ul>
-      )
-    }
+    <section>
+      <h2>Stages</h2>
+      <a href="/stages">Show more</a>
+      {
+        stages.data && (
+          <ul>
+            {stages.data.map(({ from, to }) => {
+              return (
+                <li>
+                  <span>{from.name}</span>
+                  <span> - </span>
+                  <span>{to.name}</span>
+                </li>
+              );
+            })}
+          </ul>
+        )
+      }
+    </section>
+
+    <section>
+      <h2>Tours</h2>
+      <a href="/tours">Show more</a>
+      {
+        tours.data && (
+          <ul>
+            {tours.data.map(({ name, slug }) => {
+              return (
+                <li>
+                  <a href={`/tours/${slug}`}>{name}</a>
+                </li>
+              );
+            })}
+          </ul>
+        )
+      }
+    </section>
   </div>
 </SiteLayout>
 
 <style>
-  ul {
-    li {
-      font-style: italic;
-    }
+  h2 + a {
+    font-style: italic;
   }
 </style>

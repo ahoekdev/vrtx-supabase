@@ -14,16 +14,19 @@ export type Database = {
           created_at: string
           id: string
           name: string
+          slug: string
         }
         Insert: {
           created_at?: string
           id?: string
           name: string
+          slug?: string
         }
         Update: {
           created_at?: string
           id?: string
           name?: string
+          slug?: string
         }
         Relationships: []
       }
@@ -60,21 +63,45 @@ export type Database = {
           },
         ]
       }
+      tour: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          slug?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       tour_stages: {
         Row: {
           id: string
           order: number
           stage_id: string
+          tour_id: string | null
         }
         Insert: {
           id?: string
           order: number
-          stage_id?: string
+          stage_id: string
+          tour_id?: string | null
         }
         Update: {
           id?: string
           order?: number
           stage_id?: string
+          tour_id?: string | null
         }
         Relationships: [
           {
@@ -82,6 +109,13 @@ export type Database = {
             columns: ["stage_id"]
             isOneToOne: false
             referencedRelation: "stages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tour_stages_tour_id_fkey"
+            columns: ["tour_id"]
+            isOneToOne: false
+            referencedRelation: "tour"
             referencedColumns: ["id"]
           },
         ]
@@ -224,4 +258,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-

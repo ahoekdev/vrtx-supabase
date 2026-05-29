@@ -1,0 +1,63 @@
+---
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import { getTourStages, getTours } from "../../lib/api/tours";
+
+const tours = await getTours(Astro);
+const tourStages = await getTourStages(Astro, {
+  tourIds: tours.data?.map(({ id }) => id) ?? [],
+});
+---
+
+<SiteLayout>
+  <div class="page-container">
+    <h1>Tours</h1>
+    {
+      tours.data && (
+        <div class="tours">
+          {tours.data.map((tour) => {
+            const stages = tourStages.data?.filter(
+              (tourStage) => tourStage.tour_id === tour.id,
+            );
+
+            return (
+              <section>
+                <h2>
+                  <a href={`/tours/${tour.slug}`}>{tour.name}</a>
+                </h2>
+                {
+                  stages && stages.length > 0 && (
+                    <ol>
+                      {stages.map(({ stage }) => {
+                        return (
+                          <li>
+                            <span>{stage.from.name}</span>
+                            <span> - </span>
+                            <span>{stage.to.name}</span>
+                          </li>
+                        );
+                      })}
+                    </ol>
+                  )
+                }
+              </section>
+            );
+          })}
+        </div>
+      )
+    }
+  </div>
+</SiteLayout>
+
+<style>
+  section {
+    margin-block-end: 2rem;
+  }
+
+  ol {
+    margin-block-start: 0.75rem;
+
+    li {
+      font-style: italic;
+    }
+  }
+</style>
