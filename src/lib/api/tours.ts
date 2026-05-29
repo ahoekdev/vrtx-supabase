@@ -24,6 +24,17 @@ export function getTours(
   return query;
 }
 
+export function getTourBySlug(
+  context: SupabaseContext,
+  slug: string,
+) {
+  return createClient(context)
+    .from("tour")
+    .select("*")
+    .eq("slug", slug)
+    .maybeSingle();
+}
+
 export function getTourStages(
   context: SupabaseContext,
   options: GetTourStagesOptions = {},

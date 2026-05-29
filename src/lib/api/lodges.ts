@@ -21,6 +21,17 @@ export function getLodges(
   return query;
 }
 
+export function getLodgeBySlug(
+  context: SupabaseContext,
+  slug: string,
+) {
+  return createClient(context)
+    .from("lodges")
+    .select("*")
+    .eq("slug", slug)
+    .maybeSingle();
+}
+
 interface CreateLodgeDTO {
   name: string;
 }
