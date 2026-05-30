@@ -1,10 +1,10 @@
 ---
-import SiteLayout from "../../layouts/SiteLayout.astro";
+import SiteLayout from "../../../layouts/SiteLayout.astro";
 import {
   getTourBySlug,
   getTourVariantStages,
   getTourVariants,
-} from "../../lib/api/tours";
+} from "../../../lib/api/tours";
 
 const slug = Astro.params.slug ?? "";
 const tour = await getTourBySlug(Astro, slug);
@@ -64,7 +64,7 @@ const alternateVariants = primaryVariant
           )}
           {alternateVariants.length > 0 && (
             <>
-              <h2>Variants</h2>
+              <h3>Variants</h3>
               <ul>
                 {alternateVariants.map((variant) => (
                   <li>
