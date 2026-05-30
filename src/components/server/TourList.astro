@@ -1,0 +1,60 @@
+---
+import { formatTourMetrics } from "../../lib/utils/formatTour";
+
+type TourListItem = {
+  tour: {
+    name: string;
+    slug: string;
+  };
+  variant: {
+    slug: string;
+    is_primary: boolean;
+  };
+  stageCount: number;
+  distanceMeters: number;
+};
+
+interface Props {
+  tours: TourListItem[];
+}
+
+const { tours } = Astro.props as Props;
+---
+
+{tours.length > 0 && (
+  <ul class="tour-list">
+    {tours.map(({ tour, variant, stageCount, distanceMeters }) => (
+      <li class="tour-list-item">
+        <a
+          href={
+            variant.is_primary
+              ? `/tours/${tour.slug}`
+              : `/tours/${tour.slug}/${variant.slug}`
+          }
+        >
+          {tour.name}
+        </a>
+        <span class="tour-metrics">
+          {formatTourMetrics(stageCount, distanceMeters)}
+        </span>
+      </li>
+    ))}
+  </ul>
+)}
+
+<style>
+  .tour-list {
+    padding-left: 0;
+  }
+
+  .tour-list-item {
+    list-style: none;
+    font-style: italic;
+  }
+
+  .tour-metrics {
+    margin-left: 0.5rem;
+    color: #666;
+    font-style: normal;
+  }
+</style>

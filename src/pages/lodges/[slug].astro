@@ -5,6 +5,7 @@ import {
   getNeighbouringLodges,
   getToursByLodgeId,
 } from "../../lib/api/lodges";
+import TourList from "../../components/server/TourList.astro";
 
 const slug = Astro.params.slug ?? "";
 const lodge = await getLodgeBySlug(Astro, slug);
@@ -44,21 +45,7 @@ const tours = lodge.data ? await getToursByLodgeId(Astro, lodge.data.id) : [];
           {tours.length > 0 && (
             <>
               <h2>Tours</h2>
-              <ul>
-                {tours.map(({ tour, variant }) => (
-                  <li>
-                    <a
-                      href={
-                        variant.is_primary
-                          ? `/tours/${tour.slug}`
-                          : `/tours/${tour.slug}/${variant.slug}`
-                      }
-                    >
-                      {tour.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+              <TourList tours={tours} />
             </>
           )}
         </>

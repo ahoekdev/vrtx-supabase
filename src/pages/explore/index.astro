@@ -2,13 +2,14 @@
 import SiteLayout from "../../layouts/SiteLayout.astro";
 import { getLodges } from "../../lib/api/lodges";
 import { getStages } from "../../lib/api/stages";
-import { getTours } from "../../lib/api/tours";
+import { getTourList } from "../../lib/api/tours";
 import StageList from "../../components/server/StageList.astro";
+import TourList from "../../components/server/TourList.astro";
 
 // TODO fetch in parallel
 const lodges = await getLodges(Astro, { limit: 5 });
 const stages = await getStages(Astro, { limit: 5 });
-const tours = await getTours(Astro, { limit: 5 });
+const tours = await getTourList(Astro, { limit: 5 });
 ---
 
 <SiteLayout>
@@ -47,19 +48,7 @@ const tours = await getTours(Astro, { limit: 5 });
         <h2>Multi-Day Tours</h2>
         <a class="section-link" href="/tours">View all</a>
       </div>
-      {
-        tours.data && (
-          <ul>
-            {tours.data.map(({ name, slug }) => {
-              return (
-                <li>
-                  <a href={`/tours/${slug}`}>{name}</a>
-                </li>
-              );
-            })}
-          </ul>
-        )
-      }
+      <TourList tours={tours} />
     </section>
   </div>
 </SiteLayout>

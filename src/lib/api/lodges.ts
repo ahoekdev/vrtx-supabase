@@ -143,18 +143,88 @@ export async function getToursByLodgeId(
     }
   }
 
-  return Array.from(tours.values())
+  const selectedVariants = Array.from(tours.values())
     .map((entry) => {
       const selectedVariant =
         entry.variants.find(({ is_primary }) => is_primary) ??
         entry.variants[0];
 
-      return {
-        tour: entry.tour,
-        variant: selectedVariant,
-      };
+      return selectedVariant
+        ? {
+            tour: entry.tour,
+            variant: selectedVariant,
+          }
+        : null;
     })
+    .filter(
+      (
+        entry,
+      ): entry is {
+        tour: TourSummary;
+        variant: TourVariantSummary;
+      } => entry !== null,
+    )
     .sort((left, right) => left.tour.name.localeCompare(right.tour.name));
+
+  const variantIds = selectedVariants.map(({ variant }) => variant.id);
+
+  const { data: variantStages, error: statsError } = await createClient(context)
+    .from("tour_variant_stages")
+    .select(
+      `
+      tour_variant_id,
+      stage:stages!inner(
+        distance
+      )
+    `,
+    )
+    .in("tour_variant_id", variantIds);
+
+  if (statsError) {
+    throw statsError;
+  }
+
+  type VariantStageStatsRow = {
+    tour_variant_id: string;
+    stage: {
+      distance: number;
+    } | null;
+  };
+
+  const statsByVariantId = new Map<
+    string,
+    { stageCount: number; distanceMeters: number }
+  >();
+
+  for (const row of (variantStages ?? []) as VariantStageStatsRow[]) {
+    if (!row.stage) {
+      continue;
+    }
+
+    const current = statsByVariantId.get(row.tour_variant_id) ?? {
+      stageCount: 0,
+      distanceMeters: 0,
+    };
+
+    current.stageCount += 1;
+    current.distanceMeters += row.stage.distance;
+
+    statsByVariantId.set(row.tour_variant_id, current);
+  }
+
+  return selectedVariants.map(({ tour, variant }) => {
+    const stats = statsByVariantId.get(variant.id) ?? {
+      stageCount: 0,
+      distanceMeters: 0,
+    };
+
+    return {
+      tour,
+      variant,
+      stageCount: stats.stageCount,
+      distanceMeters: stats.distanceMeters,
+    };
+  });
 }
 
 interface CreateLodgeDTO {
