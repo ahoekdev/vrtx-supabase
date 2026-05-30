@@ -1,11 +1,8 @@
 ---
 import SiteLayout from "../../layouts/SiteLayout.astro";
-import { getTourStages, getTours } from "../../lib/api/tours";
+import { getTours } from "../../lib/api/tours";
 
 const tours = await getTours(Astro);
-const tourStages = await getTourStages(Astro, {
-  tourIds: tours.data?.map(({ id }) => id) ?? [],
-});
 ---
 
 <SiteLayout>
@@ -13,40 +10,13 @@ const tourStages = await getTourStages(Astro, {
     <h1>Tours</h1>
     {
       tours.data && (
-        <div class="tours">
-          {tours.data.map((tour) => {
-            const stages = tourStages.data?.filter(
-              (tourStage) => tourStage.tour_id === tour.id,
-            );
-
-            return (
-              <section>
-                <h2>
-                  <a href={`/tours/${tour.slug}`}>{tour.name}</a>
-                </h2>
-                {
-                  stages && stages.length > 0 && (
-                    <ol>
-                      {stages.map(({ stage }) => {
-                        return (
-                          <li>
-                            <a href={`/lodges/${stage.from.slug}`}>
-                              {stage.from.name}
-                            </a>
-                            <span> - </span>
-                            <a href={`/lodges/${stage.to.slug}`}>
-                              {stage.to.name}
-                            </a>
-                          </li>
-                        );
-                      })}
-                    </ol>
-                  )
-                }
-              </section>
-            );
-          })}
-        </div>
+        <ul class="tours">
+          {tours.data.map((tour) => (
+            <li>
+              <a href={`/tours/${tour.slug}`}>{tour.name}</a>
+            </li>
+          ))}
+        </ul>
       )
     }
   </div>
@@ -63,5 +33,10 @@ const tourStages = await getTourStages(Astro, {
     li {
       font-style: italic;
     }
+  }
+
+  .stage-separator {
+    margin-inline: 0.25rem;
+    color: #999;
   }
 </style>

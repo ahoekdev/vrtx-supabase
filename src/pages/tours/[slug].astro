@@ -30,10 +30,8 @@ const tourStages = tour.data
                       <a href={`/lodges/${stage.from.slug}`}>
                         {stage.from.name}
                       </a>
-                      <span> - </span>
-                      <a href={`/lodges/${stage.to.slug}`}>
-                        {stage.to.name}
-                      </a>
+                      <span class="stage-separator">to</span>
+                      <a href={`/lodges/${stage.to.slug}`}>{stage.to.name}</a>
                     </li>
                   );
                 })}
@@ -50,3 +48,16 @@ const tourStages = tour.data
     }
   </div>
 </SiteLayout>
+
+<style>
+  ul {
+    li {
+      font-style: italic;
+    }
+  }
+
+  .stage-separator {
+    margin-inline: 0.25rem;
+    color: #999;
+  }
+</style>
