@@ -20,24 +20,26 @@ const stages = lodge.data ? await getStages(Astro) : null;
       lodge.data ? (
         <>
           <h1>{lodge.data.name}</h1>
-          <p>{lodge.data.slug}</p>
           {stages?.data && (
-            <ul>
-              {stages.data
-                .filter(
-                  ({ from, to }) =>
-                    from.name === lodgeName || to.name === lodgeName,
-                )
-                .map(({ from, to }) => {
-                  return (
-                    <li>
-                      <span>{from.name}</span>
-                      <span> - </span>
-                      <span>{to.name}</span>
-                    </li>
-                  );
-                })}
-            </ul>
+            <>
+              <h2>Related Stages</h2>
+              <ul>
+                {stages.data
+                  .filter(
+                    ({ from, to }) =>
+                      from.name === lodgeName || to.name === lodgeName,
+                  )
+                  .map(({ from, to }) => {
+                    return (
+                      <li>
+                        <span>{from.name}</span>
+                        <span> - </span>
+                        <span>{to.name}</span>
+                      </li>
+                    );
+                  })}
+              </ul>
+            </>
           )}
         </>
       ) : (

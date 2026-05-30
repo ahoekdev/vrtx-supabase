@@ -20,19 +20,21 @@ const tourStages = tour.data
       tour.data ? (
         <>
           <h1>{tour.data.name}</h1>
-          <p>{tour.data.slug}</p>
           {tourStages?.data && tourStages.data.length > 0 && (
-            <ol>
-              {tourStages.data.map(({ stage }) => {
-                return (
-                  <li>
-                    <span>{stage.from.name}</span>
-                    <span> - </span>
-                    <span>{stage.to.name}</span>
-                  </li>
-                );
-              })}
-            </ol>
+            <>
+              <h2>Stages</h2>
+              <ul>
+                {tourStages.data.map(({ stage }) => {
+                  return (
+                    <li>
+                      <span>{stage.from.name}</span>
+                      <span> - </span>
+                      <span>{stage.to.name}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
           )}
         </>
       ) : (
