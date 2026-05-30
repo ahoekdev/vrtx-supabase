@@ -12,6 +12,8 @@ export function getStages(
   let query = createClient(context).from("stages").select(
     `
   id,
+  duration,
+  distance,
   from:lodges!from_lodge_id(id, name, slug),
   to:lodges!to_lodge_id(id, name, slug)`,
   );

@@ -5,6 +5,7 @@ import {
   getTourVariantStages,
   getTourVariants,
 } from "../../../lib/api/tours";
+import { formatStageMetrics } from "../../../lib/utils/formatStage";
 
 const slug = Astro.params.slug ?? "";
 const tour = await getTourBySlug(Astro, slug);
@@ -55,6 +56,9 @@ const alternateVariants = primaryVariant
                           <a href={`/lodges/${stage.to.slug}`}>
                             {stage.to.name}
                           </a>
+                          <span class="stage-metrics">
+                            {formatStageMetrics(stage.duration, stage.distance)}
+                          </span>
                         </li>
                       );
                     })}
@@ -97,5 +101,11 @@ const alternateVariants = primaryVariant
   .stage-separator {
     margin-inline: 0.25rem;
     color: #999;
+  }
+
+  .stage-metrics {
+    margin-left: 0.5rem;
+    color: #666;
+    font-style: normal;
   }
 </style>

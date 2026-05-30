@@ -6,6 +6,7 @@ import {
   getTourVariantStages,
   getTourVariants,
 } from "../../../lib/api/tours";
+import { formatStageMetrics } from "../../../lib/utils/formatStage";
 
 const tourSlug = Astro.params.slug ?? "";
 const variantSlug = Astro.params.variantSlug ?? "";
@@ -55,6 +56,9 @@ const otherVariants = (variants?.data ?? []).filter(
                     <a href={`/lodges/${stage.from.slug}`}>{stage.from.name}</a>
                     <span class="stage-separator">to</span>
                     <a href={`/lodges/${stage.to.slug}`}>{stage.to.name}</a>
+                    <span class="stage-metrics">
+                      {formatStageMetrics(stage.duration, stage.distance)}
+                    </span>
                   </li>
                 );
               })}
@@ -98,5 +102,11 @@ const otherVariants = (variants?.data ?? []).filter(
   .stage-separator {
     margin-inline: 0.25rem;
     color: #999;
+  }
+
+  .stage-metrics {
+    margin-left: 0.5rem;
+    color: #666;
+    font-style: normal;
   }
 </style>

@@ -1,0 +1,28 @@
+export function formatDuration(minutes: number) {
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+
+  if (!hours) {
+    return `${minutes} min`;
+  }
+
+  if (!minutes) {
+    return `${hours} h`;
+  }
+
+  return `${hours} h ${remainingMinutes} min`;
+}
+
+export function formatDistance(meters: number) {
+  const kilometers = meters / 1000;
+  const rounded = Math.round(kilometers * 10) / 10;
+
+  return `${Number.isInteger(rounded) ? rounded.toFixed(0) : rounded.toFixed(1)} km`;
+}
+
+export function formatStageMetrics(
+  durationMinutes: number,
+  distanceMeters: number,
+) {
+  return `${formatDuration(durationMinutes)} · ${formatDistance(distanceMeters)}`;
+}

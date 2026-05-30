@@ -1,5 +1,11 @@
-insert into public.stages (from_lodge_id, to_lodge_id, duration, distance)
-select from_lodge.id, to_lodge.id, stage_pairs.duration, stage_pairs.distance
+alter table "public"."stages"
+  add column "duration" integer,
+  add column "distance" integer;
+
+update "public"."stages" as stage
+set
+  duration = seeded.duration,
+  distance = seeded.distance
 from (
   values
     ('Gamshütte', 'Friesenberghaus', 330, 10500),
@@ -25,8 +31,14 @@ from (
     ('Schweinfurter Hütte', 'Dortmunder Hütte', 330, 9300),
     ('Winnebachseehütte', 'Pforzheimer Hütte', 360, 10000),
     ('Dortmunder Hütte', 'Peter-Anich-Hütte', 300, 8500)
-) as stage_pairs(from_name, to_name, duration, distance)
-join public.lodges as from_lodge
-  on from_lodge.name = stage_pairs.from_name
-join public.lodges as to_lodge
-  on to_lodge.name = stage_pairs.to_name;
+) as seeded(from_name, to_name, duration, distance)
+join "public"."lodges" as from_lodge
+  on from_lodge.name = seeded.from_name
+join "public"."lodges" as to_lodge
+  on to_lodge.name = seeded.to_name
+where stage.from_lodge_id = from_lodge.id
+  and stage.to_lodge_id = to_lodge.id;
+
+alter table "public"."stages"
+  alter column "duration" set not null,
+  alter column "distance" set not null;

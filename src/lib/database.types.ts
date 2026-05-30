@@ -35,16 +35,22 @@ export type Database = {
       }
       stages: {
         Row: {
+          distance: number
+          duration: number
           from_lodge_id: string
           id: string
           to_lodge_id: string
         }
         Insert: {
+          distance: number
+          duration: number
           from_lodge_id: string
           id?: string
           to_lodge_id: string
         }
         Update: {
+          distance?: number
+          duration?: number
           from_lodge_id?: string
           id?: string
           to_lodge_id?: string

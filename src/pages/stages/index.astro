@@ -1,6 +1,7 @@
 ---
 import SiteLayout from "../../layouts/SiteLayout.astro";
 import { getStages } from "../../lib/api/stages";
+import { formatStageMetrics } from "../../lib/utils/formatStage";
 
 const stages = await getStages(Astro);
 ---
@@ -11,12 +12,15 @@ const stages = await getStages(Astro);
     {
       stages.data && (
         <ul>
-          {stages.data.map(({ from, to }) => {
+          {stages.data.map(({ from, to, duration, distance }) => {
             return (
               <li>
                 <span>{from.name}</span>
                 <span> - </span>
                 <span>{to.name}</span>
+                <span class="stage-metrics">
+                  {formatStageMetrics(duration, distance)}
+                </span>
               </li>
             );
           })}
@@ -25,3 +29,11 @@ const stages = await getStages(Astro);
     }
   </div>
 </SiteLayout>
+
+<style>
+  .stage-metrics {
+    margin-left: 0.5rem;
+    color: #666;
+    font-style: normal;
+  }
+</style>

@@ -82,6 +82,8 @@ export function getTourVariantStages(
       order,
       stage:stages(
         id,
+        duration,
+        distance,
         from:lodges!from_lodge_id(name, slug),
         to:lodges!to_lodge_id(name, slug)
       )
