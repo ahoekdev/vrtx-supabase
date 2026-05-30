@@ -5,7 +5,7 @@ import {
   getTourVariantStages,
   getTourVariants,
 } from "../../../lib/api/tours";
-import StageList from "../../../components/server/StageList.astro";
+import TourContent from "../../../components/server/TourContent.astro";
 
 const slug = Astro.params.slug ?? "";
 const tour = await getTourBySlug(Astro, slug);
@@ -28,43 +28,22 @@ const primaryVariant =
 const primaryVariantStages = primaryVariant
   ? await getTourVariantStages(Astro, { variantIds: [primaryVariant.id] })
   : null;
-
-const primaryVariantStageList =
-  primaryVariantStages?.data?.flatMap(({ stage }) => (stage ? [stage] : [])) ??
-  [];
-
-const alternateVariants = primaryVariant
-  ? variantRows.filter(({ id }) => id !== primaryVariant.id)
-  : variantRows;
 ---
 
 <SiteLayout>
   <div class="page-container">
     {
       tour.data ? (
-        <>
-          <h1>{tour.data.name}</h1>
-          {primaryVariant && (
-            <>
-              {alternateVariants.length > 0 && <h2>{primaryVariant.label}</h2>}
-              <StageList stages={primaryVariantStageList} />
-            </>
-          )}
-          {alternateVariants.length > 0 && (
-            <>
-              <h3>Variants</h3>
-              <ul>
-                {alternateVariants.map((variant) => (
-                  <li>
-                    <a href={`/tours/${tourDataSlug}/${variant.slug}`}>
-                      {variant.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-        </>
+        primaryVariant ? (
+          <TourContent
+            tour={{ name: tour.data.name, slug: tourDataSlug }}
+            variants={variantRows}
+            selectedVariant={primaryVariant}
+            stages={primaryVariantStages?.data ?? []}
+          />
+        ) : (
+          <h1>Tour not found</h1>
+        )
       ) : (
         <>
           <h1>Tour not found</h1>
@@ -74,6 +53,3 @@ const alternateVariants = primaryVariant
     }
   </div>
 </SiteLayout>
-
-<style>
-</style>
