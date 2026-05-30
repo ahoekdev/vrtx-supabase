@@ -15,7 +15,18 @@ from (
     ('Dresdner Hütte', 'Sulzenauhütte'),
     ('Sulzenauhütte', 'Nürnberger Hütte'),
     ('Nürnberger Hütte', 'Bremer Hütte'),
-    ('Bremer Hütte', 'Innsbrucker Hütte')
+    ('Bremer Hütte', 'Innsbrucker Hütte'),
+    ('Potsdamer Hütte', 'Alpengasthof Praxmar'),
+    ('Alpengasthof Praxmar', 'Pforzheimer Hütte'),
+    ('Alpengasthof Praxmar', 'Westfalenhaus'),
+    ('Westfalenhaus', 'Pforzheimer Hütte'),
+    ('Westfalenhaus', 'Winnebachseehütte'),
+    ('Pforzheimer Hütte', 'Schweinfurter Hütte'),
+    ('Schweinfurter Hütte', 'Dortmunder Hütte'),
+    ('Winnebachseehütte', 'Pforzheimer Hütte'),
+    ('Schweinfurter Hütte', 'Bielefelder Hütte'),
+    ('Bielefelder Hütte', 'Dortmunder Hütte'),
+    ('Dortmunder Hütte', 'Peter-Anich-Hütte')
 ) as stage_pairs(from_name, to_name)
 join public.lodges as from_lodge
   on from_lodge.name = stage_pairs.from_name

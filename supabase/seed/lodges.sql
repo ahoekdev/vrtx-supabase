@@ -15,4 +15,13 @@ values
   ('Sulzenauhütte'),
   ('Nürnberger Hütte'),
   ('Bremer Hütte'),
-  ('Innsbrucker Hütte');
+  ('Innsbrucker Hütte'),
+  ('Potsdamer Hütte'),
+  ('Alpengasthof Praxmar'),
+  ('Westfalenhaus'),
+  ('Pforzheimer Hütte'),
+  ('Schweinfurter Hütte'),
+  ('Dortmunder Hütte'),
+  ('Winnebachseehütte'),
+  ('Bielefelder Hütte'),
+  ('Peter-Anich-Hütte');
