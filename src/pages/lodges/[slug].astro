@@ -28,6 +28,7 @@ const tours = lodge.data ? await getToursByLodgeId(Astro, lodge.data.id) : [];
       lodge.data ? (
         <>
           <h1>{lodge.data.name}</h1>
+          {lodge.data.description && <p>{lodge.data.description}</p>}
           {neighbouringLodges.length > 0 && (
             <>
               <h2>Neighbouring Lodges</h2>
