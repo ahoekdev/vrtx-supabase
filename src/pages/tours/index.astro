@@ -30,9 +30,13 @@ const tourStages = await getTourStages(Astro, {
                       {stages.map(({ stage }) => {
                         return (
                           <li>
-                            <span>{stage.from.name}</span>
+                            <a href={`/lodges/${stage.from.slug}`}>
+                              {stage.from.name}
+                            </a>
                             <span> - </span>
-                            <span>{stage.to.name}</span>
+                            <a href={`/lodges/${stage.to.slug}`}>
+                              {stage.to.name}
+                            </a>
                           </li>
                         );
                       })}

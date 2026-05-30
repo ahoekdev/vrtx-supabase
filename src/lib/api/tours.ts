@@ -47,8 +47,8 @@ export function getTourStages(
       order,
       stage:stages(
         id,
-        from:lodges!from_lodge_id(name),
-        to:lodges!to_lodge_id(name)
+        from:lodges!from_lodge_id(name, slug),
+        to:lodges!to_lodge_id(name, slug)
       )
     `,
     )
