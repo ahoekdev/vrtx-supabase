@@ -14,8 +14,10 @@ const tours = await getTours(Astro, { limit: 5 });
   <div class="page-container">
     <h1>Explore</h1>
     <section>
-      <h2>Lodges</h2>
-      <a href="/lodges">Show more</a>
+      <div class="section-header">
+        <h2>Lodges</h2>
+        <a class="section-link" href="/lodges">View all</a>
+      </div>
       {
         lodges.data && (
           <ul>
@@ -32,8 +34,10 @@ const tours = await getTours(Astro, { limit: 5 });
     </section>
 
     <section>
-      <h2>Stages</h2>
-      <a href="/stages">Show more</a>
+      <div class="section-header">
+        <h2>Stages</h2>
+        <a class="section-link" href="/stages">View all</a>
+      </div>
       {
         stages.data && (
           <ul>
@@ -52,8 +56,10 @@ const tours = await getTours(Astro, { limit: 5 });
     </section>
 
     <section>
-      <h2>Tours</h2>
-      <a href="/tours">Show more</a>
+      <div class="section-header">
+        <h2>Tours</h2>
+        <a class="section-link" href="/tours">View all</a>
+      </div>
       {
         tours.data && (
           <ul>
@@ -72,7 +78,13 @@ const tours = await getTours(Astro, { limit: 5 });
 </SiteLayout>
 
 <style>
-  h2 + a {
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  .section-link {
     font-style: italic;
   }
 </style>
