@@ -46,6 +46,7 @@ const otherVariants = (variants?.data ?? []).filter(
         <>
           <h1>{tourData.name}</h1>
           <h2>{variantData.label}</h2>
+          {variantData.description && <p>{variantData.description}</p>}
           {variantStages?.data && variantStages.data.length > 0 && (
             <ul>
               {variantStages.data.map(({ stage }) => {

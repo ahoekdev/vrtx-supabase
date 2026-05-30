@@ -3,12 +3,13 @@ values
   ('Berliner Hohenweg'),
   ('Stubaier Hohenweg');
 
-insert into public.tour_variants (tour_id, label, slug, is_primary)
+insert into public.tour_variants (tour_id, label, slug, is_primary, description)
 select
   tour.id,
   'Primary',
   'primary',
-  true
+  true,
+  'Default route for the tour.'
 from public.tour as tour;
 
 insert into public.tour_variant_stages (tour_variant_id, stage_id, "order")
@@ -50,18 +51,19 @@ insert into public.tour (name)
 values
   ('Sellrainer Hüttenrunde');
 
-insert into public.tour_variants (tour_id, label, slug, is_primary)
+insert into public.tour_variants (tour_id, label, slug, is_primary, description)
 select
   tour.id,
   variants.label,
   variants.slug,
-  variants.is_primary
+  variants.is_primary,
+  variants.description
 from public.tour as tour
 join (
   values
-    ('Sellrainer Hüttenrunde', 'Alpin', 'alpin', true),
-    ('Sellrainer Hüttenrunde', 'Hochalpin', 'hochalpin', false)
-) as variants(tour_name, label, slug, is_primary)
+    ('Sellrainer Hüttenrunde', 'Alpin', 'alpin', true, 'Lower-altitude route with a gentler hut sequence.'),
+    ('Sellrainer Hüttenrunde', 'Hochalpin', 'hochalpin', false, 'Higher, more demanding route with extra alpine days.')
+) as variants(tour_name, label, slug, is_primary, description)
   on tour.name = variants.tour_name;
 
 insert into public.tour_variant_stages (tour_variant_id, stage_id, "order")

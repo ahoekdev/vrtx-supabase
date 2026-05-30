@@ -45,7 +45,7 @@ export function getTourVariants(
 ) {
   let query = createClient(context)
     .from("tour_variants")
-    .select("id, tour_id, label, slug, is_primary")
+    .select("id, tour_id, label, slug, is_primary, description")
     .order("tour_id", { ascending: true })
     .order("is_primary", { ascending: false })
     .order("label", { ascending: true });
@@ -64,7 +64,7 @@ export function getTourVariantBySlug(
 ) {
   return createClient(context)
     .from("tour_variants")
-    .select("id, tour_id, label, slug, is_primary")
+    .select("id, tour_id, label, slug, is_primary, description")
     .eq("tour_id", tourId)
     .eq("slug", slug)
     .maybeSingle();
