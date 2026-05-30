@@ -3,14 +3,14 @@ export function formatDuration(minutes: number) {
   const remainingMinutes = minutes % 60;
 
   if (!hours) {
-    return `${minutes} min`;
+    return `${minutes}m`;
   }
 
-  if (!minutes) {
-    return `${hours} h`;
+  if (!remainingMinutes) {
+    return `${hours}h`;
   }
 
-  return `${hours} h ${remainingMinutes} min`;
+  return `${hours}h${remainingMinutes}m`;
 }
 
 export function formatDistance(meters: number) {

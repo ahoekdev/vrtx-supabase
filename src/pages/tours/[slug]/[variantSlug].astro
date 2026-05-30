@@ -6,7 +6,7 @@ import {
   getTourVariantStages,
   getTourVariants,
 } from "../../../lib/api/tours";
-import { formatStageMetrics } from "../../../lib/utils/formatStage";
+import StageList from "../../../components/server/StageList.astro";
 
 const tourSlug = Astro.params.slug ?? "";
 const variantSlug = Astro.params.variantSlug ?? "";
@@ -32,6 +32,9 @@ const variantStages =
   variantData &&
   (await getTourVariantStages(Astro, { variantIds: [variantData.id] }));
 
+const variantStageList =
+  variantStages?.data?.flatMap(({ stage }) => (stage ? [stage] : [])) ?? [];
+
 const variants =
   tourData && (await getTourVariants(Astro, { tourIds: [tourData.id] }));
 
@@ -48,22 +51,7 @@ const otherVariants = (variants?.data ?? []).filter(
           <h1>{tourData.name}</h1>
           <h2>{variantData.label}</h2>
           {variantData.description && <p>{variantData.description}</p>}
-          {variantStages?.data && variantStages.data.length > 0 && (
-            <ul>
-              {variantStages.data.map(({ stage }) => {
-                return (
-                  <li>
-                    <a href={`/lodges/${stage.from.slug}`}>{stage.from.name}</a>
-                    <span class="stage-separator">to</span>
-                    <a href={`/lodges/${stage.to.slug}`}>{stage.to.name}</a>
-                    <span class="stage-metrics">
-                      {formatStageMetrics(stage.duration, stage.distance)}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
+          <StageList stages={variantStageList} />
           {otherVariants.length > 0 && (
             <>
               <h3>Other variants</h3>
@@ -93,20 +81,4 @@ const otherVariants = (variants?.data ?? []).filter(
 </SiteLayout>
 
 <style>
-  ul {
-    li {
-      font-style: italic;
-    }
-  }
-
-  .stage-separator {
-    margin-inline: 0.25rem;
-    color: #999;
-  }
-
-  .stage-metrics {
-    margin-left: 0.5rem;
-    color: #666;
-    font-style: normal;
-  }
 </style>

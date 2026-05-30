@@ -1,0 +1,59 @@
+---
+import { formatStageMetrics } from "../../lib/utils/formatStage";
+
+interface StageListItem {
+  from: {
+    name: string;
+    slug: string;
+  };
+  to: {
+    name: string;
+    slug: string;
+  };
+  duration: number;
+  distance: number;
+}
+
+interface Props {
+  stages: StageListItem[];
+}
+
+const { stages } = Astro.props as Props;
+---
+
+{stages.length > 0 && (
+  <ul class="stage-list">
+    {stages.map(({ from, to, duration, distance }) => (
+      <li class="stage-list-item">
+        <a href={`/lodges/${from.slug}`}>{from.name}</a>
+        <span class="stage-separator">to</span>
+        <a href={`/lodges/${to.slug}`}>{to.name}</a>
+        <span class="stage-metrics">
+          {formatStageMetrics(duration, distance)}
+        </span>
+      </li>
+    ))}
+  </ul>
+)}
+
+<style>
+  .stage-list {
+    padding-left: 0;
+  }
+
+  .stage-list-item {
+    list-style: none;
+    font-style: italic;
+  }
+
+  .stage-separator {
+    margin-inline: 0.25rem;
+    color: #999;
+  }
+
+  .stage-metrics {
+    margin-left: 0.5rem;
+    color: #666;
+    font-style: normal;
+  }
+</style>

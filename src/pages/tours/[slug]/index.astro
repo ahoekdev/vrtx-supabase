@@ -5,7 +5,7 @@ import {
   getTourVariantStages,
   getTourVariants,
 } from "../../../lib/api/tours";
-import { formatStageMetrics } from "../../../lib/utils/formatStage";
+import StageList from "../../../components/server/StageList.astro";
 
 const slug = Astro.params.slug ?? "";
 const tour = await getTourBySlug(Astro, slug);
@@ -29,6 +29,10 @@ const primaryVariantStages = primaryVariant
   ? await getTourVariantStages(Astro, { variantIds: [primaryVariant.id] })
   : null;
 
+const primaryVariantStageList =
+  primaryVariantStages?.data?.flatMap(({ stage }) => (stage ? [stage] : [])) ??
+  [];
+
 const alternateVariants = primaryVariant
   ? variantRows.filter(({ id }) => id !== primaryVariant.id)
   : variantRows;
@@ -43,27 +47,7 @@ const alternateVariants = primaryVariant
           {primaryVariant && (
             <>
               {alternateVariants.length > 0 && <h2>{primaryVariant.label}</h2>}
-              {primaryVariantStages?.data &&
-                primaryVariantStages.data.length > 0 && (
-                  <ul>
-                    {primaryVariantStages.data.map(({ stage }) => {
-                      return (
-                        <li>
-                          <a href={`/lodges/${stage.from.slug}`}>
-                            {stage.from.name}
-                          </a>
-                          <span class="stage-separator">to</span>
-                          <a href={`/lodges/${stage.to.slug}`}>
-                            {stage.to.name}
-                          </a>
-                          <span class="stage-metrics">
-                            {formatStageMetrics(stage.duration, stage.distance)}
-                          </span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )}
+              <StageList stages={primaryVariantStageList} />
             </>
           )}
           {alternateVariants.length > 0 && (
@@ -92,20 +76,4 @@ const alternateVariants = primaryVariant
 </SiteLayout>
 
 <style>
-  ul {
-    li {
-      font-style: italic;
-    }
-  }
-
-  .stage-separator {
-    margin-inline: 0.25rem;
-    color: #999;
-  }
-
-  .stage-metrics {
-    margin-left: 0.5rem;
-    color: #666;
-    font-style: normal;
-  }
 </style>
