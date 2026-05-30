@@ -12,18 +12,21 @@ export type Database = {
       lodges: {
         Row: {
           created_at: string
+          description: string | null
           id: string
           name: string
           slug: string
         }
         Insert: {
           created_at?: string
+          description?: string | null
           id?: string
           name: string
           slug: string
         }
         Update: {
           created_at?: string
+          description?: string | null
           id?: string
           name?: string
           slug?: string
@@ -32,16 +35,22 @@ export type Database = {
       }
       stages: {
         Row: {
+          distance: number
+          duration: number
           from_lodge_id: string
           id: string
           to_lodge_id: string
         }
         Insert: {
+          distance: number
+          duration: number
           from_lodge_id: string
           id?: string
           to_lodge_id: string
         }
         Update: {
+          distance?: number
+          duration?: number
           from_lodge_id?: string
           id?: string
           to_lodge_id?: string
@@ -123,6 +132,7 @@ export type Database = {
       tour_variants: {
         Row: {
           created_at: string
+          description: string | null
           id: string
           is_primary: boolean
           label: string
@@ -131,6 +141,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          description?: string | null
           id?: string
           is_primary?: boolean
           label: string
@@ -139,6 +150,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          description?: string | null
           id?: string
           is_primary?: boolean
           label?: string

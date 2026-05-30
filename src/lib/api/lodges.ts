@@ -31,6 +31,10 @@ export function getLodgeBySlug(context: SupabaseContext, slug: string) {
 }
 
 type TourSummary = Pick<Tables<"tour">, "id" | "name" | "slug">;
+type TourVariantSummary = Pick<
+  Tables<"tour_variants">,
+  "id" | "label" | "slug" | "is_primary"
+>;
 type NeighbouringLodge = Pick<Tables<"lodges">, "id" | "name" | "slug">;
 
 export async function getNeighbouringLodges(
@@ -77,6 +81,10 @@ export async function getToursByLodgeId(
         to_lodge_id
       ),
       tour_variant:tour_variants!inner(
+        id,
+        label,
+        slug,
+        is_primary,
         tour:tour!inner(id, name, slug)
       )
     `,
@@ -89,26 +97,64 @@ export async function getToursByLodgeId(
     throw error;
   }
 
-  const tours = new Map<string, TourSummary>();
+  const tours = new Map<
+    string,
+    {
+      tour: TourSummary;
+      variants: TourVariantSummary[];
+    }
+  >();
 
   type LodgeTourRow = {
     stage: Pick<Tables<"stages">, "from_lodge_id" | "to_lodge_id"> | null;
     tour_variant: {
+      id: string;
+      label: string;
+      slug: string;
+      is_primary: boolean;
       tour: TourSummary;
     } | null;
   };
 
   for (const row of (data ?? []) as LodgeTourRow[]) {
     const tour = row.tour_variant?.tour;
+    const variant = row.tour_variant
+      ? {
+          id: row.tour_variant.id,
+          label: row.tour_variant.label,
+          slug: row.tour_variant.slug,
+          is_primary: row.tour_variant.is_primary,
+        }
+      : null;
 
-    if (tour && !tours.has(tour.id)) {
-      tours.set(tour.id, tour);
+    if (tour && variant) {
+      const entry = tours.get(tour.id);
+
+      if (entry) {
+        if (!entry.variants.some(({ id }) => id === variant.id)) {
+          entry.variants.push(variant);
+        }
+      } else {
+        tours.set(tour.id, {
+          tour,
+          variants: [variant],
+        });
+      }
     }
   }
 
-  return Array.from(tours.values()).sort((left, right) =>
-    left.name.localeCompare(right.name),
-  );
+  return Array.from(tours.values())
+    .map((entry) => {
+      const selectedVariant =
+        entry.variants.find(({ is_primary }) => is_primary) ??
+        entry.variants[0];
+
+      return {
+        tour: entry.tour,
+        variant: selectedVariant,
+      };
+    })
+    .sort((left, right) => left.tour.name.localeCompare(right.tour.name));
 }
 
 interface CreateLodgeDTO {

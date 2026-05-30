@@ -28,6 +28,7 @@ const tours = lodge.data ? await getToursByLodgeId(Astro, lodge.data.id) : [];
       lodge.data ? (
         <>
           <h1>{lodge.data.name}</h1>
+          {lodge.data.description && <p>{lodge.data.description}</p>}
           {neighbouringLodges.length > 0 && (
             <>
               <h2>Neighbouring Lodges</h2>
@@ -44,9 +45,17 @@ const tours = lodge.data ? await getToursByLodgeId(Astro, lodge.data.id) : [];
             <>
               <h2>Tours</h2>
               <ul>
-                {tours.map(({ name, slug }) => (
+                {tours.map(({ tour, variant }) => (
                   <li>
-                    <a href={`/tours/${slug}`}>{name}</a>
+                    <a
+                      href={
+                        variant.is_primary
+                          ? `/tours/${tour.slug}`
+                          : `/tours/${tour.slug}/${variant.slug}`
+                      }
+                    >
+                      {tour.name}
+                    </a>
                   </li>
                 ))}
               </ul>

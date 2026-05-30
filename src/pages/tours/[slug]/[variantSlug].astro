@@ -6,6 +6,7 @@ import {
   getTourVariantStages,
   getTourVariants,
 } from "../../../lib/api/tours";
+import TourContent from "../../../components/server/TourContent.astro";
 
 const tourSlug = Astro.params.slug ?? "";
 const variantSlug = Astro.params.variantSlug ?? "";
@@ -33,47 +34,18 @@ const variantStages =
 
 const variants =
   tourData && (await getTourVariants(Astro, { tourIds: [tourData.id] }));
-
-const otherVariants = (variants?.data ?? []).filter(
-  (otherVariant) => otherVariant.slug !== variantSlug,
-);
 ---
 
 <SiteLayout>
   <div class="page-container">
     {
       tourData && variantData ? (
-        <>
-          <h1>{tourData.name}</h1>
-          <h2>{variantData.label}</h2>
-          {variantStages?.data && variantStages.data.length > 0 && (
-            <ul>
-              {variantStages.data.map(({ stage }) => {
-                return (
-                  <li>
-                    <a href={`/lodges/${stage.from.slug}`}>{stage.from.name}</a>
-                    <span class="stage-separator">to</span>
-                    <a href={`/lodges/${stage.to.slug}`}>{stage.to.name}</a>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-          {otherVariants.length > 0 && (
-            <>
-              <h3>Other variants</h3>
-              <ul>
-                {otherVariants.map((otherVariant) => (
-                  <li>
-                    <a href={`/tours/${tourDataSlug}/${otherVariant.slug}`}>
-                      {otherVariant.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-        </>
+        <TourContent
+          tour={{ name: tourData.name, slug: tourDataSlug }}
+          variants={variants?.data ?? []}
+          selectedVariant={variantData}
+          stages={variantStages?.data ?? []}
+        />
       ) : (
         <>
           <h1>Tour variant not found</h1>
@@ -86,16 +58,3 @@ const otherVariants = (variants?.data ?? []).filter(
     }
   </div>
 </SiteLayout>
-
-<style>
-  ul {
-    li {
-      font-style: italic;
-    }
-  }
-
-  .stage-separator {
-    margin-inline: 0.25rem;
-    color: #999;
-  }
-</style>

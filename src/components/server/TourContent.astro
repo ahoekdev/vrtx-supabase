@@ -1,0 +1,112 @@
+---
+import StageList from "./StageList.astro";
+
+type TourVariant = {
+  id: string;
+  label: string;
+  slug: string;
+  is_primary: boolean;
+  description: string | null;
+};
+
+type StageListItem = {
+  from: {
+    name: string;
+    slug: string;
+  };
+  to: {
+    name: string;
+    slug: string;
+  };
+  duration: number;
+  distance: number;
+};
+
+type StageRow =
+  | StageListItem
+  | { stage: StageListItem | null }
+  | null
+  | undefined;
+
+interface Props {
+  tour: {
+    name: string;
+    slug: string;
+  };
+  variants: TourVariant[];
+  selectedVariant: TourVariant;
+  stages: StageRow[];
+}
+
+const { tour, variants, selectedVariant, stages } = Astro.props as Props;
+
+const hasMultipleVariants = variants.length > 1;
+
+const normalizedStages = stages.flatMap((row) => {
+  if (!row) {
+    return [];
+  }
+
+  if ("stage" in row) {
+    return row.stage ? [row.stage] : [];
+  }
+
+  return [row];
+});
+---
+
+<section class="tour-content">
+  <h1>{tour.name}</h1>
+  {
+    hasMultipleVariants && (
+      <nav class="variant-nav" aria-label="Tour variants">
+        {variants.map((variant) => {
+          const isActive = variant.id === selectedVariant.id;
+          const href = variant.is_primary
+            ? `/tours/${tour.slug}`
+            : `/tours/${tour.slug}/${variant.slug}`;
+
+          return isActive ? (
+            <span class="variant-link active" aria-current="page">
+              {variant.label}
+            </span>
+          ) : (
+            <a class="variant-link" href={href}>
+              {variant.label}
+            </a>
+          );
+        })}
+      </nav>
+    )
+  }
+  {hasMultipleVariants && <h2>{selectedVariant.label}</h2>}
+  {selectedVariant.description && <p>{selectedVariant.description}</p>}
+  <StageList stages={normalizedStages} />
+</section>
+
+<style>
+  .tour-content {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .variant-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-block-end: 0.25rem;
+  }
+
+  .variant-link {
+    padding: 0.25rem 0.5rem;
+    border-radius: 999px;
+    color: inherit;
+    text-decoration: none;
+    background: rgba(0, 0, 0, 0.06);
+  }
+
+  .variant-link.active {
+    background: rgba(0, 0, 0, 0.12);
+    font-weight: 700;
+  }
+</style>
