@@ -60,8 +60,7 @@ from public.tour as tour
 join (
   values
     ('Sellrainer Hüttenrunde', 'Alpin', 'alpin', true),
-    ('Sellrainer Hüttenrunde', 'Hochalpin', 'hochalpin', false),
-    ('Sellrainer Hüttenrunde', 'Hochalpin via Bielefelder Hütte', 'hochalpin-bielefelder-huette', false)
+    ('Sellrainer Hüttenrunde', 'Hochalpin', 'hochalpin', false)
 ) as variants(tour_name, label, slug, is_primary)
   on tour.name = variants.tour_name;
 
@@ -73,24 +72,17 @@ select
 from (
   values
     ('Sellrainer Hüttenrunde', 'alpin', 'Potsdamer Hütte', 'Alpengasthof Praxmar', 1),
-    ('Sellrainer Hüttenrunde', 'alpin', 'Alpengasthof Praxmar', 'Pforzheimer Hütte', 2),
-    ('Sellrainer Hüttenrunde', 'alpin', 'Pforzheimer Hütte', 'Schweinfurter Hütte', 3),
-    ('Sellrainer Hüttenrunde', 'alpin', 'Schweinfurter Hütte', 'Dortmunder Hütte', 4),
+    ('Sellrainer Hüttenrunde', 'alpin', 'Alpengasthof Praxmar', 'Westfalenhaus', 2),
+    ('Sellrainer Hüttenrunde', 'alpin', 'Westfalenhaus', 'Pforzheimer Hütte', 3),
+    ('Sellrainer Hüttenrunde', 'alpin', 'Pforzheimer Hütte', 'Schweinfurter Hütte', 4),
+    ('Sellrainer Hüttenrunde', 'alpin', 'Schweinfurter Hütte', 'Dortmunder Hütte', 5),
     ('Sellrainer Hüttenrunde', 'hochalpin', 'Potsdamer Hütte', 'Alpengasthof Praxmar', 1),
     ('Sellrainer Hüttenrunde', 'hochalpin', 'Alpengasthof Praxmar', 'Westfalenhaus', 2),
     ('Sellrainer Hüttenrunde', 'hochalpin', 'Westfalenhaus', 'Winnebachseehütte', 3),
     ('Sellrainer Hüttenrunde', 'hochalpin', 'Winnebachseehütte', 'Pforzheimer Hütte', 4),
     ('Sellrainer Hüttenrunde', 'hochalpin', 'Pforzheimer Hütte', 'Schweinfurter Hütte', 5),
     ('Sellrainer Hüttenrunde', 'hochalpin', 'Schweinfurter Hütte', 'Dortmunder Hütte', 6),
-    ('Sellrainer Hüttenrunde', 'hochalpin', 'Dortmunder Hütte', 'Peter-Anich-Hütte', 7),
-    ('Sellrainer Hüttenrunde', 'hochalpin-bielefelder-huette', 'Potsdamer Hütte', 'Alpengasthof Praxmar', 1),
-    ('Sellrainer Hüttenrunde', 'hochalpin-bielefelder-huette', 'Alpengasthof Praxmar', 'Westfalenhaus', 2),
-    ('Sellrainer Hüttenrunde', 'hochalpin-bielefelder-huette', 'Westfalenhaus', 'Winnebachseehütte', 3),
-    ('Sellrainer Hüttenrunde', 'hochalpin-bielefelder-huette', 'Winnebachseehütte', 'Pforzheimer Hütte', 4),
-    ('Sellrainer Hüttenrunde', 'hochalpin-bielefelder-huette', 'Pforzheimer Hütte', 'Schweinfurter Hütte', 5),
-    ('Sellrainer Hüttenrunde', 'hochalpin-bielefelder-huette', 'Schweinfurter Hütte', 'Bielefelder Hütte', 6),
-    ('Sellrainer Hüttenrunde', 'hochalpin-bielefelder-huette', 'Bielefelder Hütte', 'Dortmunder Hütte', 7),
-    ('Sellrainer Hüttenrunde', 'hochalpin-bielefelder-huette', 'Dortmunder Hütte', 'Peter-Anich-Hütte', 8)
+    ('Sellrainer Hüttenrunde', 'hochalpin', 'Dortmunder Hütte', 'Peter-Anich-Hütte', 7)
 ) as seeded_stages(tour_name, variant_slug, from_name, to_name, stage_order)
 join public.tour as tour
   on tour.name = seeded_stages.tour_name

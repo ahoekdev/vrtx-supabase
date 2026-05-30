@@ -24,8 +24,6 @@ from (
     ('Pforzheimer Hütte', 'Schweinfurter Hütte'),
     ('Schweinfurter Hütte', 'Dortmunder Hütte'),
     ('Winnebachseehütte', 'Pforzheimer Hütte'),
-    ('Schweinfurter Hütte', 'Bielefelder Hütte'),
-    ('Bielefelder Hütte', 'Dortmunder Hütte'),
     ('Dortmunder Hütte', 'Peter-Anich-Hütte')
 ) as stage_pairs(from_name, to_name)
 join public.lodges as from_lodge
