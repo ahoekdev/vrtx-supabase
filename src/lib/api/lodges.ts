@@ -30,6 +30,7 @@ export function getLodgeBySlug(context: SupabaseContext, slug: string) {
     .maybeSingle();
 }
 
+type TourSummary = Pick<Tables<"tour">, "id" | "name" | "slug">;
 type NeighbouringLodge = Pick<Tables<"lodges">, "id" | "name" | "slug">;
 
 export async function getNeighbouringLodges(
@@ -61,6 +62,47 @@ export async function getNeighbouringLodges(
   }
 
   return Array.from(neighbouringLodges.values());
+}
+
+export async function getToursByLodgeId(
+  context: SupabaseContext,
+  lodgeId: string,
+) {
+  const { data, error } = await createClient(context)
+    .from("tour_stages")
+    .select(
+      `
+      tour:tour(id, name, slug),
+      stage:stages!inner(
+        id,
+        from_lodge_id,
+        to_lodge_id
+      )
+    `,
+    )
+    .order("tour_id", { ascending: true })
+    .order("order", { ascending: true })
+    .or(`from_lodge_id.eq.${lodgeId},to_lodge_id.eq.${lodgeId}`, {
+      referencedTable: "stage",
+    });
+
+  if (error) {
+    throw error;
+  }
+
+  const tours = new Map<string, TourSummary>();
+
+  if (!data) {
+    return [];
+  }
+
+  for (const { tour } of data) {
+    if (tour && !tours.has(tour.id)) {
+      tours.set(tour.id, tour);
+    }
+  }
+
+  return Array.from(tours.values());
 }
 
 interface CreateLodgeDTO {

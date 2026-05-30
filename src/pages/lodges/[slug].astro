@@ -1,6 +1,10 @@
 ---
 import SiteLayout from "../../layouts/SiteLayout.astro";
-import { getLodgeBySlug, getNeighbouringLodges } from "../../lib/api/lodges";
+import {
+  getLodgeBySlug,
+  getNeighbouringLodges,
+  getToursByLodgeId,
+} from "../../lib/api/lodges";
 
 const slug = Astro.params.slug ?? "";
 const lodge = await getLodgeBySlug(Astro, slug);
@@ -14,6 +18,8 @@ if (!lodge.data) {
 const neighbouringLodges = lodge.data
   ? await getNeighbouringLodges(Astro, lodge.data.id)
   : [];
+
+const tours = lodge.data ? await getToursByLodgeId(Astro, lodge.data.id) : [];
 ---
 
 <SiteLayout>
@@ -29,6 +35,18 @@ const neighbouringLodges = lodge.data
                 {neighbouringLodges.map(({ name, slug }) => (
                   <li>
                     <a href={`/lodges/${slug}`}>{name}</a>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+          {tours.length > 0 && (
+            <>
+              <h2>Tours</h2>
+              <ul>
+                {tours.map(({ name, slug }) => (
+                  <li>
+                    <a href={`/tours/${slug}`}>{name}</a>
                   </li>
                 ))}
               </ul>
