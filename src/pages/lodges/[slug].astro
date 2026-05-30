@@ -1,7 +1,7 @@
 ---
 import SiteLayout from "../../layouts/SiteLayout.astro";
 import { getLodgeBySlug } from "../../lib/api/lodges";
-import { getStages } from "../../lib/api/stages";
+import { getStagesByLodgeId } from "../../lib/api/stages";
 
 const slug = Astro.params.slug ?? "";
 const lodge = await getLodgeBySlug(Astro, slug);
@@ -10,8 +10,9 @@ if (!lodge.data) {
   Astro.response.status = 404;
 }
 
-const lodgeName = lodge.data?.name ?? "";
-const stages = lodge.data ? await getStages(Astro) : null;
+const stages = lodge.data
+  ? await getStagesByLodgeId(Astro, lodge.data.id)
+  : null;
 ---
 
 <SiteLayout>
@@ -24,20 +25,15 @@ const stages = lodge.data ? await getStages(Astro) : null;
             <>
               <h2>Related Stages</h2>
               <ul>
-                {stages.data
-                  .filter(
-                    ({ from, to }) =>
-                      from.name === lodgeName || to.name === lodgeName,
-                  )
-                  .map(({ from, to }) => {
-                    return (
-                      <li>
-                        <span>{from.name}</span>
-                        <span> - </span>
-                        <span>{to.name}</span>
-                      </li>
-                    );
-                  })}
+                {stages.data.map(({ from, to }) => {
+                  return (
+                    <li>
+                      <span>{from.name}</span>
+                      <span> - </span>
+                      <span>{to.name}</span>
+                    </li>
+                  );
+                })}
               </ul>
             </>
           )}
