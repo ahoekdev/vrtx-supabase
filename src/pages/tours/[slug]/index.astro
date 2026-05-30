@@ -1,0 +1,101 @@
+---
+import SiteLayout from "../../../layouts/SiteLayout.astro";
+import {
+  getTourBySlug,
+  getTourVariantStages,
+  getTourVariants,
+} from "../../../lib/api/tours";
+
+const slug = Astro.params.slug ?? "";
+const tour = await getTourBySlug(Astro, slug);
+const tourData = tour.data;
+const tourDataSlug = tourData?.slug ?? "";
+
+if (!tourData) {
+  Astro.response.status = 404;
+}
+
+const variants = tourData
+  ? await getTourVariants(Astro, { tourIds: [tourData.id] })
+  : null;
+
+const variantRows = variants?.data ?? [];
+
+const primaryVariant =
+  variantRows.find(({ is_primary }) => is_primary) ?? variantRows[0] ?? null;
+
+const primaryVariantStages = primaryVariant
+  ? await getTourVariantStages(Astro, { variantIds: [primaryVariant.id] })
+  : null;
+
+const alternateVariants = primaryVariant
+  ? variantRows.filter(({ id }) => id !== primaryVariant.id)
+  : variantRows;
+---
+
+<SiteLayout>
+  <div class="page-container">
+    {
+      tour.data ? (
+        <>
+          <h1>{tour.data.name}</h1>
+          {primaryVariant && (
+            <>
+              {alternateVariants.length > 0 && <h2>{primaryVariant.label}</h2>}
+              {primaryVariantStages?.data &&
+                primaryVariantStages.data.length > 0 && (
+                  <ul>
+                    {primaryVariantStages.data.map(({ stage }) => {
+                      return (
+                        <li>
+                          <a href={`/lodges/${stage.from.slug}`}>
+                            {stage.from.name}
+                          </a>
+                          <span class="stage-separator">to</span>
+                          <a href={`/lodges/${stage.to.slug}`}>
+                            {stage.to.name}
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+            </>
+          )}
+          {alternateVariants.length > 0 && (
+            <>
+              <h3>Variants</h3>
+              <ul>
+                {alternateVariants.map((variant) => (
+                  <li>
+                    <a href={`/tours/${tourDataSlug}/${variant.slug}`}>
+                      {variant.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </>
+      ) : (
+        <>
+          <h1>Tour not found</h1>
+          <p>We could not find a tour for slug {slug}.</p>
+        </>
+      )
+    }
+  </div>
+</SiteLayout>
+
+<style>
+  ul {
+    li {
+      font-style: italic;
+    }
+  }
+
+  .stage-separator {
+    margin-inline: 0.25rem;
+    color: #999;
+  }
+</style>

@@ -4,8 +4,12 @@ interface GetToursOptions {
   limit?: number;
 }
 
-interface GetTourStagesOptions {
+interface GetTourVariantsOptions {
   tourIds?: string[];
+}
+
+interface GetTourVariantStagesOptions {
+  variantIds?: string[];
 }
 
 export function getTours(
@@ -35,15 +39,46 @@ export function getTourBySlug(
     .maybeSingle();
 }
 
-export function getTourStages(
+export function getTourVariants(
   context: SupabaseContext,
-  options: GetTourStagesOptions = {},
+  options: GetTourVariantsOptions = {},
 ) {
   let query = createClient(context)
-    .from("tour_stages")
+    .from("tour_variants")
+    .select("id, tour_id, label, slug, is_primary")
+    .order("tour_id", { ascending: true })
+    .order("is_primary", { ascending: false })
+    .order("label", { ascending: true });
+
+  if (options.tourIds?.length) {
+    query = query.in("tour_id", options.tourIds);
+  }
+
+  return query;
+}
+
+export function getTourVariantBySlug(
+  context: SupabaseContext,
+  tourId: string,
+  slug: string,
+) {
+  return createClient(context)
+    .from("tour_variants")
+    .select("id, tour_id, label, slug, is_primary")
+    .eq("tour_id", tourId)
+    .eq("slug", slug)
+    .maybeSingle();
+}
+
+export function getTourVariantStages(
+  context: SupabaseContext,
+  options: GetTourVariantStagesOptions = {},
+) {
+  let query = createClient(context)
+    .from("tour_variant_stages")
     .select(
       `
-      tour_id,
+      tour_variant_id,
       order,
       stage:stages(
         id,
@@ -52,11 +87,11 @@ export function getTourStages(
       )
     `,
     )
-    .order("tour_id", { ascending: true })
+    .order("tour_variant_id", { ascending: true })
     .order("order", { ascending: true });
 
-  if (options.tourIds?.length) {
-    query = query.in("tour_id", options.tourIds);
+  if (options.variantIds?.length) {
+    query = query.in("tour_variant_id", options.variantIds);
   }
 
   return query;
