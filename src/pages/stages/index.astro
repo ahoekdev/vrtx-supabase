@@ -1,8 +1,8 @@
 ---
 import SiteLayout from "../../layouts/SiteLayout.astro";
-import { getAllStages } from "../../lib/api/stages";
+import { getStages } from "../../lib/api/stages";
 
-const stages = await getAllStages(Astro);
+const stages = await getStages(Astro);
 ---
 
 <SiteLayout>

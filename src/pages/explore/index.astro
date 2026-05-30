@@ -1,11 +1,12 @@
 ---
 import SiteLayout from "../../layouts/SiteLayout.astro";
 import { getLodges } from "../../lib/api/lodges";
-import { getAllStages } from "../../lib/api/stages";
+import { getStages } from "../../lib/api/stages";
 import { getTours } from "../../lib/api/tours";
 
+// TODO fetch in parallel
 const lodges = await getLodges(Astro, { limit: 5 });
-const stages = await getAllStages(Astro, { limit: 5 });
+const stages = await getStages(Astro, { limit: 5 });
 const tours = await getTours(Astro, { limit: 5 });
 ---
 

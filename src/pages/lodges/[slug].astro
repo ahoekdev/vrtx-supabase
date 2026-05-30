@@ -1,7 +1,6 @@
 ---
 import SiteLayout from "../../layouts/SiteLayout.astro";
-import { getLodgeBySlug } from "../../lib/api/lodges";
-import { getStagesByLodgeId } from "../../lib/api/stages";
+import { getLodgeBySlug, getNeighbouringLodges } from "../../lib/api/lodges";
 
 const slug = Astro.params.slug ?? "";
 const lodge = await getLodgeBySlug(Astro, slug);
@@ -10,9 +9,11 @@ if (!lodge.data) {
   Astro.response.status = 404;
 }
 
-const stages = lodge.data
-  ? await getStagesByLodgeId(Astro, lodge.data.id)
-  : null;
+// TODO neighbouring lodges could also be fetched directly in getLodgeBySlug
+// Or even better, load the page with the lodge data and then fetch the neighbouring lodges in the client
+const neighbouringLodges = lodge.data
+  ? await getNeighbouringLodges(Astro, lodge.data.id)
+  : [];
 ---
 
 <SiteLayout>
@@ -21,19 +22,15 @@ const stages = lodge.data
       lodge.data ? (
         <>
           <h1>{lodge.data.name}</h1>
-          {stages?.data && (
+          {neighbouringLodges.length > 0 && (
             <>
-              <h2>Related Stages</h2>
+              <h2>Neighbouring Lodges</h2>
               <ul>
-                {stages.data.map(({ from, to }) => {
-                  return (
-                    <li>
-                      <span>{from.name}</span>
-                      <span> - </span>
-                      <span>{to.name}</span>
-                    </li>
-                  );
-                })}
+                {neighbouringLodges.map(({ name, slug }) => (
+                  <li>
+                    <a href={`/lodges/${slug}`}>{name}</a>
+                  </li>
+                ))}
               </ul>
             </>
           )}

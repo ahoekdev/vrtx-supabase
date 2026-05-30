@@ -5,15 +5,15 @@ interface GetStagesOptions {
   lodgeId?: string;
 }
 
-export function getAllStages(
+export function getStages(
   context: SupabaseContext,
   options: GetStagesOptions = {},
 ) {
   let query = createClient(context).from("stages").select(
     `
   id,
-  from:lodges!from_lodge_id(name),
-  to:lodges!to_lodge_id(name)`,
+  from:lodges!from_lodge_id(id, name, slug),
+  to:lodges!to_lodge_id(id, name, slug)`,
   );
 
   if (options.lodgeId) {
@@ -27,11 +27,4 @@ export function getAllStages(
   }
 
   return query;
-}
-
-export function getStagesByLodgeId(
-  context: SupabaseContext,
-  lodgeId: string,
-) {
-  return getAllStages(context, { lodgeId });
 }
