@@ -1,17 +1,36 @@
 ---
 import SiteLayout from "../../layouts/SiteLayout.astro";
-import { getTourBySlug, getTourStages } from "../../lib/api/tours";
+import {
+  getTourBySlug,
+  getTourVariantStages,
+  getTourVariants,
+} from "../../lib/api/tours";
 
 const slug = Astro.params.slug ?? "";
 const tour = await getTourBySlug(Astro, slug);
+const tourData = tour.data;
+const tourDataSlug = tourData?.slug ?? "";
 
-if (!tour.data) {
+if (!tourData) {
   Astro.response.status = 404;
 }
 
-const tourStages = tour.data
-  ? await getTourStages(Astro, { tourIds: [tour.data.id] })
+const variants = tourData
+  ? await getTourVariants(Astro, { tourIds: [tourData.id] })
   : null;
+
+const variantRows = variants?.data ?? [];
+
+const primaryVariant =
+  variantRows.find(({ is_primary }) => is_primary) ?? variantRows[0] ?? null;
+
+const primaryVariantStages = primaryVariant
+  ? await getTourVariantStages(Astro, { variantIds: [primaryVariant.id] })
+  : null;
+
+const alternateVariants = primaryVariant
+  ? variantRows.filter(({ id }) => id !== primaryVariant.id)
+  : variantRows;
 ---
 
 <SiteLayout>
@@ -20,21 +39,40 @@ const tourStages = tour.data
       tour.data ? (
         <>
           <h1>{tour.data.name}</h1>
-          {tourStages?.data && tourStages.data.length > 0 && (
+          {primaryVariant && (
             <>
-              <h2>Stages</h2>
+              {alternateVariants.length > 0 && <h2>{primaryVariant.label}</h2>}
+              {primaryVariantStages?.data &&
+                primaryVariantStages.data.length > 0 && (
+                  <ul>
+                    {primaryVariantStages.data.map(({ stage }) => {
+                      return (
+                        <li>
+                          <a href={`/lodges/${stage.from.slug}`}>
+                            {stage.from.name}
+                          </a>
+                          <span class="stage-separator">to</span>
+                          <a href={`/lodges/${stage.to.slug}`}>
+                            {stage.to.name}
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+            </>
+          )}
+          {alternateVariants.length > 0 && (
+            <>
+              <h2>Variants</h2>
               <ul>
-                {tourStages.data.map(({ stage }) => {
-                  return (
-                    <li>
-                      <a href={`/lodges/${stage.from.slug}`}>
-                        {stage.from.name}
-                      </a>
-                      <span class="stage-separator">to</span>
-                      <a href={`/lodges/${stage.to.slug}`}>{stage.to.name}</a>
-                    </li>
-                  );
-                })}
+                {alternateVariants.map((variant) => (
+                  <li>
+                    <a href={`/tours/${tourDataSlug}/${variant.slug}`}>
+                      {variant.label}
+                    </a>
+                  </li>
+                ))}
               </ul>
             </>
           )}

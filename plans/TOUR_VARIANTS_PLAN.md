@@ -42,13 +42,14 @@
 2. Backfill one variant per existing `tour`.
 3. Set the backfilled variant as primary.
 4. Derive its slug from the existing tour slug or a default label like `default`.
-5. Rename `tour_stages` to `tour_variant_stages`.
+5. Replace `tour_stages` with `tour_variant_stages`.
 6. Add `tour_variant_id`.
 7. Backfill `tour_variant_id` from the old `tour_id`.
-8. Drop or deprecate `tour_id`.
+8. Drop the old `tour_stages` table once the data is copied over.
 9. Add the uniqueness and primary constraints.
 10. Update the app to read from the new tables.
 11. Update write paths for create, promote/demote primary, and stage reordering.
+12. Update seed data so `db reset` populates the new variant tables too.
 
 ## Backfill Strategy
 
@@ -65,4 +66,4 @@
 - Variant pages live at `/tours/:tourSlug/:variantSlug`.
 - The first variant created for a tour becomes primary automatically.
 - Variant stage order starts at `1` and should be kept contiguous by the write path.
-
+- Fresh local resets need both the migration backfill and seed inserts to populate the new tables.

@@ -20,7 +20,7 @@ export type Database = {
           created_at?: string
           id?: string
           name: string
-          slug?: string
+          slug: string
         }
         Update: {
           created_at?: string
@@ -74,7 +74,7 @@ export type Database = {
           created_at?: string
           id?: string
           name: string
-          slug?: string
+          slug: string
         }
         Update: {
           created_at?: string
@@ -84,35 +84,70 @@ export type Database = {
         }
         Relationships: []
       }
-      tour_stages: {
+      tour_variant_stages: {
         Row: {
           id: string
           order: number
           stage_id: string
-          tour_id: string | null
+          tour_variant_id: string
         }
         Insert: {
           id?: string
           order: number
           stage_id: string
-          tour_id?: string | null
+          tour_variant_id: string
         }
         Update: {
           id?: string
           order?: number
           stage_id?: string
-          tour_id?: string | null
+          tour_variant_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "tour_stages_stage_id_fkey"
+            foreignKeyName: "tour_variant_stages_stage_id_fkey"
             columns: ["stage_id"]
             isOneToOne: false
             referencedRelation: "stages"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "tour_stages_tour_id_fkey"
+            foreignKeyName: "tour_variant_stages_tour_variant_id_fkey"
+            columns: ["tour_variant_id"]
+            isOneToOne: false
+            referencedRelation: "tour_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tour_variants: {
+        Row: {
+          created_at: string
+          id: string
+          is_primary: boolean
+          label: string
+          slug: string
+          tour_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_primary?: boolean
+          label: string
+          slug: string
+          tour_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_primary?: boolean
+          label?: string
+          slug?: string
+          tour_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tour_variants_tour_id_fkey"
             columns: ["tour_id"]
             isOneToOne: false
             referencedRelation: "tour"
@@ -125,7 +160,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      slugify_text: { Args: { input: string }; Returns: string }
     }
     Enums: {
       [_ in never]: never
@@ -258,3 +293,4 @@ export const Constants = {
     Enums: {},
   },
 } as const
+

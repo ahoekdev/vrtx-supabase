@@ -69,19 +69,18 @@ export async function getToursByLodgeId(
   lodgeId: string,
 ) {
   const { data, error } = await createClient(context)
-    .from("tour_stages")
+    .from("tour_variant_stages")
     .select(
       `
-      tour:tour(id, name, slug),
       stage:stages!inner(
-        id,
         from_lodge_id,
         to_lodge_id
+      ),
+      tour_variant:tour_variants!inner(
+        tour:tour!inner(id, name, slug)
       )
     `,
     )
-    .order("tour_id", { ascending: true })
-    .order("order", { ascending: true })
     .or(`from_lodge_id.eq.${lodgeId},to_lodge_id.eq.${lodgeId}`, {
       referencedTable: "stage",
     });
@@ -92,17 +91,24 @@ export async function getToursByLodgeId(
 
   const tours = new Map<string, TourSummary>();
 
-  if (!data) {
-    return [];
-  }
+  type LodgeTourRow = {
+    stage: Pick<Tables<"stages">, "from_lodge_id" | "to_lodge_id"> | null;
+    tour_variant: {
+      tour: TourSummary;
+    } | null;
+  };
 
-  for (const { tour } of data) {
+  for (const row of (data ?? []) as LodgeTourRow[]) {
+    const tour = row.tour_variant?.tour;
+
     if (tour && !tours.has(tour.id)) {
       tours.set(tour.id, tour);
     }
   }
 
-  return Array.from(tours.values());
+  return Array.from(tours.values()).sort((left, right) =>
+    left.name.localeCompare(right.name),
+  );
 }
 
 interface CreateLodgeDTO {

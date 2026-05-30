@@ -3,8 +3,19 @@ values
   ('Berliner Hohenweg'),
   ('Stubaier Hohenweg');
 
-insert into public.tour_stages (tour_id, stage_id, "order")
-select tour.id, stage.id, seeded_stages.stage_order
+insert into public.tour_variants (tour_id, label, slug, is_primary)
+select
+  tour.id,
+  'Primary',
+  'primary',
+  true
+from public.tour as tour;
+
+insert into public.tour_variant_stages (tour_variant_id, stage_id, "order")
+select
+  variant.id,
+  stage.id,
+  seeded_stages.stage_order
 from (
   values
     ('Berliner Hohenweg', 'Gamshütte', 'Friesenberghaus', 1),
@@ -24,6 +35,9 @@ from (
 ) as seeded_stages(tour_name, from_name, to_name, stage_order)
 join public.tour as tour
   on tour.name = seeded_stages.tour_name
+join public.tour_variants as variant
+  on variant.tour_id = tour.id
+ and variant.is_primary = true
 join public.lodges as from_lodge
   on from_lodge.name = seeded_stages.from_name
 join public.lodges as to_lodge
