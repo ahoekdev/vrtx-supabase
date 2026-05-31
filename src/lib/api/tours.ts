@@ -1,142 +1,149 @@
-import { type Tables } from "../database.types";
 import { createClient, type SupabaseContext } from "../supabase";
 
-interface GetTourListOptions {
+interface GetToursOptions {
   limit?: number;
 }
 
-type TourSummary = Pick<Tables<"tour">, "id" | "name" | "slug">;
-type TourVariantSummary = Pick<
-  Tables<"tour_variants">,
-  "id" | "tour_id" | "label" | "slug" | "is_primary"
->;
-type TourStageStats = {
+type TourListItem = {
+  tour: {
+    name: string;
+    slug: string;
+  };
+  variant: {
+    slug: string;
+    label: string;
+  };
+  variantCount: number;
   stageCount: number;
   distanceMeters: number;
 };
 
-// TODO refactor to use a single query with joins instead of multiple queries and in-memory processing
-export async function getTourList(
-  context: SupabaseContext,
-  options: GetTourListOptions = {},
+type TourVariantStageRow = {
+  stage: {
+    distance: number;
+  } | null;
+};
+
+type TourListRow = {
+  id: string;
+  label: string;
+  slug: string;
+  is_primary: boolean;
+  tour: {
+    id: string;
+    name: string;
+    slug: string;
+  } | null;
+  tour_variant_stages: TourVariantStageRow[] | null;
+};
+
+function summarizeVariantStages(
+  rows: TourVariantStageRow[] | null | undefined,
 ) {
-  let toursQuery = createClient(context)
-    .from("tour")
-    .select("id, name, slug")
-    .order("name", { ascending: true });
+  return (rows ?? []).reduce(
+    (stats, row) => {
+      if (!row.stage) {
+        return stats;
+      }
 
-  if (options.limit) {
-    toursQuery = toursQuery.limit(options.limit);
-  }
+      stats.stageCount += 1;
+      stats.distanceMeters += row.stage.distance;
+      return stats;
+    },
+    {
+      stageCount: 0,
+      distanceMeters: 0,
+    },
+  );
+}
 
-  const { data: tours, error: toursError } = await toursQuery;
+export async function getTours(
+  context: SupabaseContext,
+  options: GetToursOptions = {},
+) {
+  const client = createClient(context);
 
-  if (toursError) {
-    throw toursError;
-  }
-
-  const tourIds = (tours ?? []).map((tour) => tour.id);
-
-  if (!tourIds.length) {
-    return [];
-  }
-
-  const { data: variants, error: variantsError } = await createClient(context)
+  let toursQuery = client
     .from("tour_variants")
-    .select("id, tour_id, label, slug, is_primary")
-    .in("tour_id", tourIds)
-    .order("tour_id", { ascending: true })
-    .order("is_primary", { ascending: false })
-    .order("label", { ascending: true });
-
-  if (variantsError) {
-    throw variantsError;
-  }
-
-  const typedVariants = (variants ?? []) as TourVariantSummary[];
-  const variantIds = typedVariants.map(({ id }) => id);
-
-  const { data: variantStages, error: stagesError } = await createClient(
-    context,
-  )
-    .from("tour_variant_stages")
     .select(
       `
-      tour_variant_id,
-      stage:stages!inner(
-        distance
+      id,
+      label,
+      slug,
+      is_primary,
+      tour:tour!inner(
+        id,
+        name,
+        slug
+      ),
+      tour_variant_stages(
+        stage:stages(
+          distance
+        )
       )
     `,
     )
-    .in("tour_variant_id", variantIds);
+    .order("is_primary", { ascending: false });
 
-  if (stagesError) {
-    throw stagesError;
+  const { data, error } = await toursQuery;
+
+  if (error) {
+    throw error;
   }
 
-  type VariantStageStatsRow = {
-    tour_variant_id: string;
-    stage: {
-      distance: number;
-    } | null;
-  };
+  const rows = ((data ?? []) as TourListRow[]).sort((left, right) => {
+    const leftTourName = left.tour?.name ?? "";
+    const rightTourName = right.tour?.name ?? "";
 
-  const statsByVariantId = new Map<string, TourStageStats>();
+    const tourNameComparison = leftTourName.localeCompare(rightTourName);
 
-  for (const row of (variantStages ?? []) as VariantStageStatsRow[]) {
-    if (!row.stage) {
-      continue;
+    if (tourNameComparison !== 0) {
+      return tourNameComparison;
     }
 
-    const current = statsByVariantId.get(row.tour_variant_id) ?? {
-      stageCount: 0,
-      distanceMeters: 0,
-    };
+    if (left.is_primary !== right.is_primary) {
+      return left.is_primary ? -1 : 1;
+    }
 
-    current.stageCount += 1;
-    current.distanceMeters += row.stage.distance;
+    return left.label.localeCompare(right.label);
+  });
 
-    statsByVariantId.set(row.tour_variant_id, current);
-  }
+  const variantCountByTourSlug = rows.reduce<Map<string, number>>(
+    (counts, row) => {
+      if (!row.tour) {
+        return counts;
+      }
 
-  const variantsByTourId = new Map<string, TourVariantSummary[]>();
+      counts.set(row.tour.slug, (counts.get(row.tour.slug) ?? 0) + 1);
+      return counts;
+    },
+    new Map(),
+  );
 
-  for (const variant of typedVariants) {
-    const existing = variantsByTourId.get(variant.tour_id) ?? [];
-    existing.push(variant);
-    variantsByTourId.set(variant.tour_id, existing);
-  }
+  const limitedRows = options.limit ? rows.slice(0, options.limit) : rows;
 
-  return tours
-    .map((tour) => {
-      const tourVariants = variantsByTourId.get(tour.id) ?? [];
-      const selectedVariant =
-        tourVariants.find(({ is_primary }) => is_primary) ?? tourVariants[0];
-
-      if (!selectedVariant) {
+  return limitedRows
+    .map((row): TourListItem | null => {
+      if (!row.tour) {
         return null;
       }
 
-      const stats = statsByVariantId.get(selectedVariant.id) ?? {
-        stageCount: 0,
-        distanceMeters: 0,
-      };
+      const stats = summarizeVariantStages(row.tour_variant_stages);
+      const variantCount = variantCountByTourSlug.get(row.tour.slug) ?? 0;
 
       return {
-        tour,
-        variant: selectedVariant,
+        tour: {
+          name: row.tour.name,
+          slug: row.tour.slug,
+        },
+        variant: {
+          slug: row.slug,
+          label: row.label,
+        },
+        variantCount,
         stageCount: stats.stageCount,
         distanceMeters: stats.distanceMeters,
       };
     })
-    .filter(
-      (
-        entry,
-      ): entry is {
-        tour: TourSummary;
-        variant: TourVariantSummary;
-        stageCount: number;
-        distanceMeters: number;
-      } => entry !== null,
-    );
+    .filter((entry): entry is TourListItem => entry !== null);
 }
