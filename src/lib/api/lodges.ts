@@ -1,6 +1,11 @@
 import { type SupabaseClient } from "@supabase/supabase-js";
 import { createClient, type SupabaseContext } from "../supabase";
 import { type Tables } from "../database.types";
+import type {
+  LodgeSummary,
+  TourSummary,
+  TourVariantSummary,
+} from "../types/lodges";
 
 interface GetLodgesOptions {
   limit?: number;
@@ -30,18 +35,11 @@ export function getLodgeBySlug(context: SupabaseContext, slug: string) {
     .maybeSingle();
 }
 
-type TourSummary = Pick<Tables<"tour">, "id" | "name" | "slug">;
-type TourVariantSummary = Pick<
-  Tables<"tour_variants">,
-  "id" | "label" | "slug" | "is_primary"
->;
-type NeighbouringLodge = Pick<Tables<"lodges">, "id" | "name" | "slug">;
-
-export async function getNeighbouringLodges(
+export async function getNeighboursByLodgeId(
   context: SupabaseContext,
   lodgeId: string,
 ) {
-  const { data, error } = await createClient(context)
+  const { data: stages, error } = await createClient(context)
     .from("stages")
     .select(
       `
@@ -55,17 +53,16 @@ export async function getNeighbouringLodges(
     throw error;
   }
 
-  const neighbouringLodges = new Map<string, NeighbouringLodge>();
-
-  for (const stage of data ?? []) {
-    const neighbour = stage.from.id === lodgeId ? stage.to : stage.from;
-
-    if (!neighbouringLodges.has(neighbour.id)) {
-      neighbouringLodges.set(neighbour.id, neighbour);
-    }
+  if (!stages) {
+    return [];
   }
 
-  return Array.from(neighbouringLodges.values());
+  return Array.from(
+    stages.reduce(
+      (acc, { from, to }) => acc.add(from.id === lodgeId ? to : from),
+      new Set<LodgeSummary>(),
+    ),
+  ).toSorted((a, b) => a.name.localeCompare(b.name));
 }
 
 export async function getToursByLodgeId(
