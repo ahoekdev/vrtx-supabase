@@ -3,48 +3,41 @@ import SiteLayout from "../../../layouts/SiteLayout.astro";
 import {
   getTourBySlug,
   getTourVariantBySlug,
-  getTourVariantStages,
-  getTourVariants,
+  getTourVariantStagesByTourVariantId,
+  getTourVariantsByTourId,
 } from "../../../lib/api/tours";
 import TourContent from "../../../components/server/TourContent.astro";
 
 const tourSlug = Astro.params.slug ?? "";
 const variantSlug = Astro.params.variantSlug ?? "";
 const tour = await getTourBySlug(Astro, tourSlug);
-const tourData = tour.data;
-const tourDataSlug = tourData?.slug ?? "";
 
-if (!tourData) {
+if (!tour) {
   Astro.response.status = 404;
 }
 
-const variant = tourData
-  ? await getTourVariantBySlug(Astro, tourData.id, variantSlug)
-  : null;
+const variant =
+  tour && (await getTourVariantBySlug(Astro, tour.id, variantSlug));
 
-const variantData = variant?.data;
-
-if (tourData && !variantData) {
+if (!variant) {
   Astro.response.status = 404;
 }
 
-const variantStages =
-  variantData &&
-  (await getTourVariantStages(Astro, { variantIds: [variantData.id] }));
-
-const variants =
-  tourData && (await getTourVariants(Astro, { tourIds: [tourData.id] }));
+const [stages, variants] = await Promise.all([
+  variant ? getTourVariantStagesByTourVariantId(Astro, variant.id) : [],
+  tour ? getTourVariantsByTourId(Astro, tour.id) : [],
+]);
 ---
 
 <SiteLayout>
   <div class="page-container">
     {
-      tourData && variantData ? (
+      tour && variant ? (
         <TourContent
-          tour={{ name: tourData.name, slug: tourDataSlug }}
-          variants={variants?.data ?? []}
-          selectedVariant={variantData}
-          stages={variantStages?.data ?? []}
+          tour={{ name: tour.name, slug: tour.slug }}
+          variants={variants}
+          selectedVariant={variant}
+          stages={stages}
         />
       ) : (
         <>

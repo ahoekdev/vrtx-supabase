@@ -1,18 +1,6 @@
 import { createClient, type SupabaseContext } from "../supabase";
 import { type Tables } from "../database.types";
 
-interface GetToursOptions {
-  limit?: number;
-}
-
-interface GetTourVariantsOptions {
-  tourIds?: string[];
-}
-
-interface GetTourVariantStagesOptions {
-  variantIds?: string[];
-}
-
 interface GetTourListOptions {
   limit?: number;
 }
@@ -27,51 +15,89 @@ type TourStageStats = {
   distanceMeters: number;
 };
 
-export function getTours(
-  context: SupabaseContext,
-  options: GetToursOptions = {},
-) {
-  let query = createClient(context)
-    .from("tour")
-    .select("*")
-    .order("name", { ascending: true });
-
-  if (options.limit) {
-    query = query.limit(options.limit);
-  }
-
-  return query;
-}
-
-export function getTourBySlug(
-  context: SupabaseContext,
-  slug: string,
-) {
-  return createClient(context)
+export async function getTourBySlug(context: SupabaseContext, slug: string) {
+  const { data, error } = await createClient(context)
     .from("tour")
     .select("*")
     .eq("slug", slug)
     .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
 }
 
-export function getTourVariants(
+export async function getTourVariantBySlug(
   context: SupabaseContext,
-  options: GetTourVariantsOptions = {},
+  tourId: string,
+  slug: string,
 ) {
-  let query = createClient(context)
+  const { data, error } = await createClient(context)
+    .from("tour_variants")
+    .select("id, tour_id, label, slug, is_primary, description")
+    .eq("tour_id", tourId)
+    .eq("slug", slug)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+export async function getTourVariantsByTourId(
+  context: SupabaseContext,
+  tourId: string,
+) {
+  const { data, error } = await createClient(context)
     .from("tour_variants")
     .select("id, tour_id, label, slug, is_primary, description")
     .order("tour_id", { ascending: true })
     .order("is_primary", { ascending: false })
-    .order("label", { ascending: true });
+    .order("label", { ascending: true })
+    .eq("tour_id", tourId);
 
-  if (options.tourIds?.length) {
-    query = query.in("tour_id", options.tourIds);
+  if (error) {
+    throw error;
   }
 
-  return query;
+  return data;
 }
 
+export async function getTourVariantStagesByTourVariantId(
+  context: SupabaseContext,
+  variantId: string,
+) {
+  const { error, data } = await createClient(context)
+    .from("tour_variant_stages")
+    .select(
+      `
+      tour_variant_id,
+      order,
+      stage:stages(
+        id,
+        duration,
+        distance,
+        from:lodges!from_lodge_id(name, slug),
+        to:lodges!to_lodge_id(name, slug)
+      )
+    `,
+    )
+    .order("tour_variant_id", { ascending: true })
+    .order("order", { ascending: true })
+    .eq("tour_variant_id", variantId);
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+// TODO refactor this to be more efficient
 export async function getTourList(
   context: SupabaseContext,
   options: GetTourListOptions = {},
@@ -195,46 +221,4 @@ export async function getTourList(
         distanceMeters: number;
       } => entry !== null,
     );
-}
-
-export function getTourVariantBySlug(
-  context: SupabaseContext,
-  tourId: string,
-  slug: string,
-) {
-  return createClient(context)
-    .from("tour_variants")
-    .select("id, tour_id, label, slug, is_primary, description")
-    .eq("tour_id", tourId)
-    .eq("slug", slug)
-    .maybeSingle();
-}
-
-export function getTourVariantStages(
-  context: SupabaseContext,
-  options: GetTourVariantStagesOptions = {},
-) {
-  let query = createClient(context)
-    .from("tour_variant_stages")
-    .select(
-      `
-      tour_variant_id,
-      order,
-      stage:stages(
-        id,
-        duration,
-        distance,
-        from:lodges!from_lodge_id(name, slug),
-        to:lodges!to_lodge_id(name, slug)
-      )
-    `,
-    )
-    .order("tour_variant_id", { ascending: true })
-    .order("order", { ascending: true });
-
-  if (options.variantIds?.length) {
-    query = query.in("tour_variant_id", options.variantIds);
-  }
-
-  return query;
 }
