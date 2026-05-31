@@ -2,6 +2,7 @@ import { createClient, type SupabaseContext } from "../supabase";
 
 interface GetToursOptions {
   limit?: number;
+  lodgeId?: string;
 }
 
 type TourListItem = {
@@ -21,6 +22,8 @@ type TourListItem = {
 type TourVariantStageRow = {
   stage: {
     distance: number;
+    from_lodge_id?: string;
+    to_lodge_id?: string;
   } | null;
 };
 
@@ -78,7 +81,9 @@ export async function getTours(
       ),
       tour_variant_stages(
         stage:stages(
-          distance
+          distance,
+          from_lodge_id,
+          to_lodge_id
         )
       )
     `,
@@ -91,7 +96,24 @@ export async function getTours(
     throw error;
   }
 
-  const rows = ((data ?? []) as TourListRow[]).sort((left, right) => {
+  const filteredRows = ((data ?? []) as TourListRow[]).filter((row) => {
+    if (!options.lodgeId) {
+      return true;
+    }
+
+    return (row.tour_variant_stages ?? []).some(({ stage }) => {
+      if (!stage) {
+        return false;
+      }
+
+      return (
+        stage.from_lodge_id === options.lodgeId ||
+        stage.to_lodge_id === options.lodgeId
+      );
+    });
+  });
+
+  const rows = filteredRows.sort((left, right) => {
     const leftTourName = left.tour?.name ?? "";
     const rightTourName = right.tour?.name ?? "";
 
