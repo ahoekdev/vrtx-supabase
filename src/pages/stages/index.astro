@@ -1,7 +1,7 @@
 ---
 import SiteLayout from "../../layouts/SiteLayout.astro";
-import { getStages } from "../../lib/api/stages";
 import StageList from "../../components/server/StageList.astro";
+import { getStages } from "../../lib/api/stages/getStages";
 
 const stages = await getStages(Astro);
 ---
@@ -9,6 +9,6 @@ const stages = await getStages(Astro);
 <SiteLayout>
   <div class="page-container">
     <h1>Stages</h1>
-    <StageList stages={stages.data ?? []} />
+    <StageList stages={stages} />
   </div>
 </SiteLayout>

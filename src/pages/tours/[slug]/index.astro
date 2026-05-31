@@ -1,11 +1,9 @@
 ---
 import SiteLayout from "../../../layouts/SiteLayout.astro";
-import {
-  getTourBySlug,
-  getTourVariantStagesByTourVariantId,
-  getTourVariantsByTourId,
-} from "../../../lib/api/tours";
 import TourContent from "../../../components/server/TourContent.astro";
+import { getTourBySlug } from "../../../lib/api/tours/getTourBySlug";
+import { getTourVariantStagesByTourVariantId } from "../../../lib/api/tours/getTourVariantStagesByTourVariantId";
+import { getTourVariantsByTourId } from "../../../lib/api/tours/getTourVariantsByTourId";
 
 const slug = Astro.params.slug ?? "";
 const tour = await getTourBySlug(Astro, slug);

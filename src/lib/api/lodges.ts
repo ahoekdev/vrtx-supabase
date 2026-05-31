@@ -1,70 +1,8 @@
-import { type SupabaseClient } from "@supabase/supabase-js";
-import { createClient, type SupabaseContext } from "../supabase";
 import { type Tables } from "../database.types";
-import type {
-  LodgeSummary,
-  TourSummary,
-  TourVariantSummary,
-} from "../types/lodges";
+import { createClient, type SupabaseContext } from "../supabase";
+import type { TourSummary, TourVariantSummary } from "../types/lodges";
 
-interface GetLodgesOptions {
-  limit?: number;
-}
-
-export function getLodges(
-  context: SupabaseContext,
-  options: GetLodgesOptions = {},
-) {
-  let query = createClient(context)
-    .from("lodges")
-    .select("*")
-    .order("name", { ascending: true });
-
-  if (options.limit) {
-    query = query.limit(options.limit);
-  }
-
-  return query;
-}
-
-export function getLodgeBySlug(context: SupabaseContext, slug: string) {
-  return createClient(context)
-    .from("lodges")
-    .select("*")
-    .eq("slug", slug)
-    .maybeSingle();
-}
-
-export async function getNeighboursByLodgeId(
-  context: SupabaseContext,
-  lodgeId: string,
-) {
-  const { data: stages, error } = await createClient(context)
-    .from("stages")
-    .select(
-      `
-      from:lodges!from_lodge_id(id, name, slug),
-      to:lodges!to_lodge_id(id, name, slug)
-    `,
-    )
-    .or(`from_lodge_id.eq.${lodgeId},to_lodge_id.eq.${lodgeId}`);
-
-  if (error) {
-    throw error;
-  }
-
-  if (!stages) {
-    return [];
-  }
-
-  return Array.from(
-    stages.reduce(
-      (acc, { from, to }) => acc.add(from.id === lodgeId ? to : from),
-      new Set<LodgeSummary>(),
-    ),
-  ).toSorted((a, b) => a.name.localeCompare(b.name));
-}
-
+// TODO refactor to use a single query with joins instead of multiple queries and in-memory processing
 export async function getToursByLodgeId(
   context: SupabaseContext,
   lodgeId: string,
@@ -222,33 +160,4 @@ export async function getToursByLodgeId(
       distanceMeters: stats.distanceMeters,
     };
   });
-}
-
-interface CreateLodgeDTO {
-  name: string;
-}
-
-export async function createLodge(
-  { name }: CreateLodgeDTO,
-  client: SupabaseClient,
-) {
-  const { data, error } = await client
-    .from("lodges")
-    .insert({ name })
-    .select("*")
-    .single();
-
-  if (error) {
-    throw error;
-  }
-
-  return data;
-}
-
-export async function deleteLodge(id: string, client: SupabaseClient) {
-  const { error } = await client.from("lodges").delete().eq("id", id);
-
-  if (error) {
-    throw error;
-  }
 }

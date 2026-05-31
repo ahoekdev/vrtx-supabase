@@ -1,5 +1,5 @@
-import { createClient, type SupabaseContext } from "../supabase";
 import { type Tables } from "../database.types";
+import { createClient, type SupabaseContext } from "../supabase";
 
 interface GetTourListOptions {
   limit?: number;
@@ -15,89 +15,7 @@ type TourStageStats = {
   distanceMeters: number;
 };
 
-export async function getTourBySlug(context: SupabaseContext, slug: string) {
-  const { data, error } = await createClient(context)
-    .from("tour")
-    .select("*")
-    .eq("slug", slug)
-    .maybeSingle();
-
-  if (error) {
-    throw error;
-  }
-
-  return data;
-}
-
-export async function getTourVariantBySlug(
-  context: SupabaseContext,
-  tourId: string,
-  slug: string,
-) {
-  const { data, error } = await createClient(context)
-    .from("tour_variants")
-    .select("id, tour_id, label, slug, is_primary, description")
-    .eq("tour_id", tourId)
-    .eq("slug", slug)
-    .maybeSingle();
-
-  if (error) {
-    throw error;
-  }
-
-  return data;
-}
-
-export async function getTourVariantsByTourId(
-  context: SupabaseContext,
-  tourId: string,
-) {
-  const { data, error } = await createClient(context)
-    .from("tour_variants")
-    .select("id, tour_id, label, slug, is_primary, description")
-    .order("tour_id", { ascending: true })
-    .order("is_primary", { ascending: false })
-    .order("label", { ascending: true })
-    .eq("tour_id", tourId);
-
-  if (error) {
-    throw error;
-  }
-
-  return data;
-}
-
-export async function getTourVariantStagesByTourVariantId(
-  context: SupabaseContext,
-  variantId: string,
-) {
-  const { error, data } = await createClient(context)
-    .from("tour_variant_stages")
-    .select(
-      `
-      tour_variant_id,
-      order,
-      stage:stages(
-        id,
-        duration,
-        distance,
-        from:lodges!from_lodge_id(name, slug),
-        to:lodges!to_lodge_id(name, slug)
-      )
-    `,
-    )
-    .order("tour_variant_id", { ascending: true })
-    .order("order", { ascending: true })
-    .eq("tour_variant_id", variantId);
-
-  if (error) {
-    throw error;
-  }
-
-  return data;
-}
-
-// TODO refactor this to be more efficient
+// TODO refactor to use a single query with joins instead of multiple queries and in-memory processing
 export async function getTourList(
   context: SupabaseContext,
   options: GetTourListOptions = {},
