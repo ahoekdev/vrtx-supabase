@@ -6,10 +6,11 @@ import { getTourList } from "../../lib/api/tours";
 import StageList from "../../components/server/StageList.astro";
 import TourList from "../../components/server/TourList.astro";
 
-// TODO fetch in parallel
-const lodges = await getLodges(Astro, { limit: 5 });
-const stages = await getStages(Astro, { limit: 5 });
-const tours = await getTourList(Astro, { limit: 5 });
+const [lodges, stages, tours] = await Promise.all([
+  getLodges(Astro, { limit: 5 }),
+  getStages(Astro, { limit: 5 }),
+  getTourList(Astro, { limit: 5 }),
+]);
 ---
 
 <SiteLayout>
