@@ -2,7 +2,7 @@
 import SiteLayout from "../../layouts/SiteLayout.astro";
 import {
   getLodgeBySlug,
-  getNeighbouringLodges,
+  getNeighboursByLodgeId,
   getToursByLodgeId,
 } from "../../lib/api/lodges";
 import TourList from "../../components/server/TourList.astro";
@@ -14,13 +14,12 @@ if (!lodge.data) {
   Astro.response.status = 404;
 }
 
-// TODO neighbouring lodges could also be fetched directly in getLodgeBySlug
-// Or even better, load the page with the lodge data and then fetch the neighbouring lodges in the client
-const neighbouringLodges = lodge.data
-  ? await getNeighbouringLodges(Astro, lodge.data.id)
+const [neighbouringLodges = [], tours = []] = lodge.data
+  ? await Promise.all([
+      getNeighboursByLodgeId(Astro, lodge.data.id),
+      getToursByLodgeId(Astro, lodge.data.id),
+    ])
   : [];
-
-const tours = lodge.data ? await getToursByLodgeId(Astro, lodge.data.id) : [];
 ---
 
 <SiteLayout>
