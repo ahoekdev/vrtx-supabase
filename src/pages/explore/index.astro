@@ -1,10 +1,10 @@
 ---
 import SiteLayout from "../../layouts/SiteLayout.astro";
-import { getTours } from "../../lib/api/tours";
 import StageList from "../../components/server/StageList.astro";
 import TourList from "../../components/server/TourList.astro";
 import { getLodges } from "../../lib/api/lodges/getLodges";
 import { getStages } from "../../lib/api/stages/getStages";
+import { getTours } from "../../lib/api/tours/getTours";
 
 const [lodges, stages, tours] = await Promise.all([
   getLodges(Astro, { limit: 5 }),

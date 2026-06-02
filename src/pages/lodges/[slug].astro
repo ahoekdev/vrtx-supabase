@@ -1,8 +1,8 @@
 ---
 import SiteLayout from "../../layouts/SiteLayout.astro";
-import { getTours } from "../../lib/api/tours";
 import TourList from "../../components/server/TourList.astro";
 import { getLodgeBySlug } from "../../lib/api/lodges/getLodgeBySlug";
+import { getToursByLodgeId } from "../../lib/api/tours/getToursByLodgeId";
 import { getStages } from "../../lib/api/stages/getStages";
 import { convertStagesToNeighbourLodges } from "../../lib/utils/neighbourLodges";
 
@@ -16,7 +16,7 @@ if (!lodge) {
 const [stages = [], tours = []] = lodge
   ? await Promise.all([
       getStages(Astro, { lodgeId: lodge.id }),
-      getTours(Astro, { lodgeId: lodge.id }),
+      getToursByLodgeId(Astro, lodge.id),
     ])
   : [];
 

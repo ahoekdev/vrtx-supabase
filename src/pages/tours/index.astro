@@ -1,7 +1,7 @@
 ---
 import SiteLayout from "../../layouts/SiteLayout.astro";
-import { getTours } from "../../lib/api/tours";
 import TourList from "../../components/server/TourList.astro";
+import { getTours } from "../../lib/api/tours/getTours";
 
 const tours = await getTours(Astro);
 ---

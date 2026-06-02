@@ -1,9 +1,9 @@
 ---
+import type { TourVariant } from "../../lib/types/tours";
 import { formatTourMetrics } from "../../lib/utils/formatTour";
-import type { getTours } from "../../lib/api/tours";
 
 interface Props {
-  tours: Awaited<ReturnType<typeof getTours>>;
+  tours: TourVariant[];
 }
 
 const { tours } = Astro.props as Props;
@@ -12,19 +12,21 @@ const { tours } = Astro.props as Props;
 {
   tours.length > 0 && (
     <ul class="tour-list">
-      {tours.map(
-        ({ tour, variant, variantCount, stageCount, distanceMeters }) => (
+      {tours.map((item) => {
+        const { tour, variant, variantCount } = item;
+
+        return (
           <li class="tour-list-item">
             <a href={`/tours/${tour.slug}/${variant.slug}`}>{tour.name}</a>
             {variantCount > 1 && (
               <span class="tour-variant-label">({variant.label})</span>
             )}
             <span class="tour-metrics">
-              {formatTourMetrics(stageCount, distanceMeters)}
+              {formatTourMetrics(variant.stageCount, variant.distanceMeters)}
             </span>
           </li>
-        ),
-      )}
+        );
+      })}
     </ul>
   )
 }
