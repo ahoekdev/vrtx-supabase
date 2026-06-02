@@ -5,71 +5,68 @@ export async function getToursByLodgeId(
   context: SupabaseContext,
   lodgeId: string,
 ) {
-  const { data = [], error } = await createClient(context)
-    .from("tour_variant_stages")
+  const { data, error } = await createClient(context)
+    .from("tour_variants")
     .select(
       `
-      stage:stages!inner(
-        from_lodge_id,
-        to_lodge_id,
-        distance
-      ),
-      tour_variant:tour_variants!inner(
+      id,
+      label,
+      slug,
+      is_primary,
+      tour:tour!inner(
         id,
-        label,
+        name,
         slug,
-        is_primary,
-        tour:tour!inner(
-          id,
-          name,
-          slug
+        tour_variants(count)
+      ),
+      matching_stages:tour_variant_stages!inner(
+        stage:stages!inner(
+          from_lodge_id,
+          to_lodge_id
+        )
+      ),
+      all_stages:tour_variant_stages(
+        stage:stages(
+          distance
         )
       )
     `,
     )
     .or(`from_lodge_id.eq.${lodgeId},to_lodge_id.eq.${lodgeId}`, {
-      referencedTable: "stage",
+      referencedTable: "matching_stages.stage",
     });
 
   if (error) {
     throw error;
   }
 
-  if (!data) {
-    return [];
-  }
+  const rows = data ?? [];
 
-  const tourVariants: Map<string, TourVariant> = new Map();
+  const tourVariants: TourVariant[] = [];
 
-  for (const stage of data) {
-    const variant = stage.tour_variant;
+  for (const row of rows) {
+    const distanceMeters = row.all_stages.reduce(
+      (sum, { stage }) => sum + (stage?.distance ?? 0),
+      0,
+    );
+    const stageCount = row.all_stages.length;
+    const variantCount = row.tour.tour_variants[0]?.count ?? 1;
 
-    if (tourVariants.has(variant.id)) {
-      continue;
-    }
+    const { tour } = row;
 
-    // distance and count are not calculated correctly
-    const distanceMeters = data
-      .filter(({ tour_variant }) => tour_variant.id === variant.id)
-      .reduce((sum, { stage }) => sum + (stage?.distance ?? 0), 0);
-
-    const stageCount = data.filter(
-      ({ tour_variant }) => tour_variant?.id === variant.id,
-    ).length;
-
-    tourVariants.set(variant.id, {
-      tour: variant.tour,
+    tourVariants.push({
+      tour: { id: tour.id, name: tour.name, slug: tour.slug },
       variant: {
-        id: variant.id,
-        label: variant.label,
-        slug: variant.slug,
-        is_primary: variant.is_primary,
+        id: row.id,
+        label: row.label,
+        slug: row.slug,
+        is_primary: row.is_primary,
         distanceMeters,
         stageCount,
       },
-      variantCount: stageCount,
+      variantCount,
     });
   }
 
-  return Array.from(tourVariants.values());
+  return tourVariants;
 }
