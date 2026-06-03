@@ -1,4 +1,6 @@
-import type { LodgeSummary } from "../types/lodges";
+import type { Tables } from "../database.types";
+
+type LodgeSummary = Pick<Tables<"lodges">, "id" | "name" | "slug">;
 
 interface Data {
   from: LodgeSummary;

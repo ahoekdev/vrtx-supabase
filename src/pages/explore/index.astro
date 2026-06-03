@@ -4,12 +4,12 @@ import StageList from "../../components/server/StageList.astro";
 import TourList from "../../components/server/TourList.astro";
 import { getLodges } from "../../lib/api/lodges/getLodges";
 import { getStages } from "../../lib/api/stages/getStages";
-import { getTours } from "../../lib/api/tours/getTours";
+import { fetchTourVariants } from "../../lib/api/tours/fetchTourVariants";
 
 const [lodges, stages, tours] = await Promise.all([
   getLodges(Astro, { limit: 5 }),
   getStages(Astro, { limit: 5 }),
-  getTours(Astro, { limit: 5 }),
+  fetchTourVariants(Astro, { limit: 5 }),
 ]);
 ---
 
