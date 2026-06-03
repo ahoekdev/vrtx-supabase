@@ -1,38 +1,33 @@
 import type { TourVariant } from "../../../types/tours";
 
-type StageLike = {
-  stage: {
-    distance: number;
-  };
+type TourVariantRow = {
+  tour_id: string;
+  tour_name: string;
+  tour_slug: string;
+  id: string;
+  label: string;
+  slug: string;
+  is_primary: boolean;
+  stage_count: number;
+  distance_meters: number;
+  variant_count: number;
 };
 
-export type BuildTourVariantInput = {
-  tour: TourVariant["tour"];
-  variant: Omit<TourVariant["variant"], "distanceMeters" | "stageCount">;
-  stages: StageLike[];
-  variantCount: number;
-};
-
-export function buildTourVariants<T>(
-  rows: T[],
-  mapRow: (row: T) => BuildTourVariantInput,
-): TourVariant[] {
-  return rows.map((row) => {
-    const { tour, variant, stages, variantCount } = mapRow(row);
-
-    const distanceMeters = stages.reduce(
-      (sum, { stage: { distance } }) => sum + distance,
-      0,
-    );
-
-    return {
-      tour,
-      variant: {
-        ...variant,
-        distanceMeters,
-        stageCount: stages.length,
-      },
-      variantCount,
-    };
-  });
+export function buildTourVariants(rows: TourVariantRow[]): TourVariant[] {
+  return rows.map((row) => ({
+    tour: {
+      id: row.tour_id,
+      name: row.tour_name,
+      slug: row.tour_slug,
+    },
+    variant: {
+      id: row.id,
+      label: row.label,
+      slug: row.slug,
+      is_primary: row.is_primary,
+      distanceMeters: row.distance_meters,
+      stageCount: row.stage_count,
+    },
+    variantCount: row.variant_count,
+  }));
 }

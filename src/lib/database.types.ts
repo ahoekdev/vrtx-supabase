@@ -172,6 +172,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_tour_variants: {
+        Args: { p_limit?: number; p_lodge_id?: string }
+        Returns: {
+          distance_meters: number
+          id: string
+          is_primary: boolean
+          label: string
+          slug: string
+          stage_count: number
+          tour_id: string
+          tour_name: string
+          tour_slug: string
+          variant_count: number
+        }[]
+      }
       slugify_text: { Args: { input: string }; Returns: string }
     }
     Enums: {
