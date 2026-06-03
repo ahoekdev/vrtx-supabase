@@ -1,5 +1,5 @@
 import { createClient, type SupabaseContext } from "../../supabase";
-import type { TourVariant } from "../../types/tours";
+import { buildTourVariants } from "./mappers/buildTourVariants";
 
 interface GetToursOptions {
   limit?: number;
@@ -20,7 +20,8 @@ export async function getTours(
       tour:tour!inner(
         id,
         name,
-        slug
+        slug,
+        tour_variants(count)
       ),
       tour_variant_stages(
         stage:stages(
@@ -46,29 +47,19 @@ export async function getTours(
     return [];
   }
 
-  const tourVariants: TourVariant[] = [];
-
-  for (const row of data) {
-    const distanceMeters = row.tour_variant_stages.reduce(
-      (sum, stage) => sum + (stage.stage.distance ?? 0),
-      0,
-    );
-
-    const stageCount = row.tour_variant_stages.length;
-
-    tourVariants.push({
-      tour: row.tour,
-      variant: {
-        id: row.id,
-        label: row.label,
-        slug: row.slug,
-        is_primary: row.is_primary,
-        distanceMeters,
-        stageCount,
-      },
-      variantCount: row.tour_variant_stages.length,
-    });
-  }
-
-  return tourVariants;
+  return buildTourVariants(data, (row) => ({
+    tour: {
+      id: row.tour.id,
+      name: row.tour.name,
+      slug: row.tour.slug,
+    },
+    variant: {
+      id: row.id,
+      label: row.label,
+      slug: row.slug,
+      is_primary: row.is_primary,
+    },
+    stages: row.tour_variant_stages,
+    variantCount: row.tour.tour_variants[0]?.count ?? 1,
+  }));
 }
