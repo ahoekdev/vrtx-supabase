@@ -1,6 +1,6 @@
 ---
 import SiteLayout from "../../layouts/SiteLayout.astro";
-import { getLodges } from "../../lib/api/lodges";
+import { getLodges } from "../../lib/api/lodges/getLodges";
 
 const lodges = await getLodges(Astro);
 ---
@@ -9,9 +9,9 @@ const lodges = await getLodges(Astro);
   <div class="page-container">
     <h1>Lodges</h1>
     {
-      lodges.data && (
+      lodges.length > 0 && (
         <ul>
-          {lodges.data.map(({ name, slug }) => {
+          {lodges.map(({ name, slug }) => {
             return (
               <li>
                 <a href={`/lodges/${slug}`}>{name}</a>

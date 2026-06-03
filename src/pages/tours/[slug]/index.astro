@@ -1,45 +1,37 @@
 ---
 import SiteLayout from "../../../layouts/SiteLayout.astro";
-import {
-  getTourBySlug,
-  getTourVariantStages,
-  getTourVariants,
-} from "../../../lib/api/tours";
 import TourContent from "../../../components/server/TourContent.astro";
+import { getTourBySlug } from "../../../lib/api/tours/getTourBySlug";
+import { getTourVariantStagesByTourVariantId } from "../../../lib/api/tours/getTourVariantStagesByTourVariantId";
+import { getTourVariantsByTourId } from "../../../lib/api/tours/getTourVariantsByTourId";
 
 const slug = Astro.params.slug ?? "";
 const tour = await getTourBySlug(Astro, slug);
-const tourData = tour.data;
-const tourDataSlug = tourData?.slug ?? "";
 
-if (!tourData) {
+if (!tour) {
   Astro.response.status = 404;
 }
 
-const variants = tourData
-  ? await getTourVariants(Astro, { tourIds: [tourData.id] })
-  : null;
-
-const variantRows = variants?.data ?? [];
+const variants = tour ? await getTourVariantsByTourId(Astro, tour.id) : [];
 
 const primaryVariant =
-  variantRows.find(({ is_primary }) => is_primary) ?? variantRows[0] ?? null;
+  variants.find(({ is_primary }) => is_primary) ?? variants[0] ?? null;
 
 const primaryVariantStages = primaryVariant
-  ? await getTourVariantStages(Astro, { variantIds: [primaryVariant.id] })
-  : null;
+  ? await getTourVariantStagesByTourVariantId(Astro, primaryVariant.id)
+  : [];
 ---
 
 <SiteLayout>
   <div class="page-container">
     {
-      tour.data ? (
+      tour ? (
         primaryVariant ? (
           <TourContent
-            tour={{ name: tour.data.name, slug: tourDataSlug }}
-            variants={variantRows}
+            tour={{ name: tour.name, slug: tour.slug }}
+            variants={variants}
             selectedVariant={primaryVariant}
-            stages={primaryVariantStages?.data ?? []}
+            stages={primaryVariantStages}
           />
         ) : (
           <h1>Tour not found</h1>

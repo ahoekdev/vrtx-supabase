@@ -1,46 +1,43 @@
 ---
+import type { TourVariantRow } from "../../lib/api/tours/fetchTourVariants";
 import { formatTourMetrics } from "../../lib/utils/formatTour";
 
-type TourListItem = {
-  tour: {
-    name: string;
-    slug: string;
-  };
-  variant: {
-    slug: string;
-    is_primary: boolean;
-  };
-  stageCount: number;
-  distanceMeters: number;
-};
-
 interface Props {
-  tours: TourListItem[];
+  tours: TourVariantRow[];
 }
 
 const { tours } = Astro.props as Props;
 ---
 
-{tours.length > 0 && (
-  <ul class="tour-list">
-    {tours.map(({ tour, variant, stageCount, distanceMeters }) => (
-      <li class="tour-list-item">
-        <a
-          href={
-            variant.is_primary
-              ? `/tours/${tour.slug}`
-              : `/tours/${tour.slug}/${variant.slug}`
-          }
-        >
-          {tour.name}
-        </a>
-        <span class="tour-metrics">
-          {formatTourMetrics(stageCount, distanceMeters)}
-        </span>
-      </li>
-    ))}
-  </ul>
-)}
+{
+  tours.length > 0 && (
+    <ul class="tour-list">
+      {tours.map((item) => {
+        const {
+          tour_name,
+          tour_slug,
+          label,
+          slug,
+          stage_count,
+          distance_meters,
+          variant_count,
+        } = item;
+
+        return (
+          <li class="tour-list-item">
+            <a href={`/tours/${tour_slug}/${slug}`}>{tour_name}</a>
+            {variant_count > 1 && (
+              <span class="tour-variant-label">({label})</span>
+            )}
+            <span class="tour-metrics">
+              {formatTourMetrics(stage_count, distance_meters)}
+            </span>
+          </li>
+        );
+      })}
+    </ul>
+  )
+}
 
 <style>
   .tour-list {
@@ -54,6 +51,12 @@ const { tours } = Astro.props as Props;
 
   .tour-metrics {
     margin-left: 0.5rem;
+    color: #666;
+    font-style: normal;
+  }
+
+  .tour-variant-label {
+    margin-left: 0.25rem;
     color: #666;
     font-style: normal;
   }

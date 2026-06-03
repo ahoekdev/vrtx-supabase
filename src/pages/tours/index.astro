@@ -1,9 +1,9 @@
 ---
 import SiteLayout from "../../layouts/SiteLayout.astro";
-import { getTourList } from "../../lib/api/tours";
 import TourList from "../../components/server/TourList.astro";
+import { fetchTourVariants } from "../../lib/api/tours/fetchTourVariants";
 
-const tours = await getTourList(Astro);
+const tours = await fetchTourVariants(Astro);
 ---
 
 <SiteLayout>

@@ -1,35 +1,38 @@
 ---
 import SiteLayout from "../../layouts/SiteLayout.astro";
-import {
-  getLodgeBySlug,
-  getNeighbouringLodges,
-  getToursByLodgeId,
-} from "../../lib/api/lodges";
 import TourList from "../../components/server/TourList.astro";
+import { getLodgeBySlug } from "../../lib/api/lodges/getLodgeBySlug";
+import { getStages } from "../../lib/api/stages/getStages";
+import { fetchTourVariants } from "../../lib/api/tours/fetchTourVariants";
+import { convertStagesToNeighbourLodges } from "../../lib/utils/neighbourLodges";
 
 const slug = Astro.params.slug ?? "";
 const lodge = await getLodgeBySlug(Astro, slug);
 
-if (!lodge.data) {
+if (!lodge) {
   Astro.response.status = 404;
 }
 
-// TODO neighbouring lodges could also be fetched directly in getLodgeBySlug
-// Or even better, load the page with the lodge data and then fetch the neighbouring lodges in the client
-const neighbouringLodges = lodge.data
-  ? await getNeighbouringLodges(Astro, lodge.data.id)
+const [stages = [], tours = []] = lodge
+  ? await Promise.all([
+      getStages(Astro, { lodgeId: lodge.id }),
+      fetchTourVariants(Astro, { lodgeId: lodge.id }),
+    ])
   : [];
 
-const tours = lodge.data ? await getToursByLodgeId(Astro, lodge.data.id) : [];
+const neighbouringLodges =
+  lodge && stages.length > 0
+    ? convertStagesToNeighbourLodges(stages, lodge.id)
+    : [];
 ---
 
 <SiteLayout>
   <div class="page-container">
     {
-      lodge.data ? (
+      lodge ? (
         <>
-          <h1>{lodge.data.name}</h1>
-          {lodge.data.description && <p>{lodge.data.description}</p>}
+          <h1>{lodge.name}</h1>
+          {lodge.description && <p>{lodge.description}</p>}
           {neighbouringLodges.length > 0 && (
             <>
               <h2>Neighbouring Lodges</h2>
