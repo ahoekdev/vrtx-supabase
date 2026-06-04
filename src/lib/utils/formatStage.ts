@@ -1,3 +1,5 @@
+import dist from "@astrojs/react";
+
 export function formatDuration(minutes: number) {
   const hours = Math.floor(minutes / 60);
   const remainingMinutes = minutes % 60;
@@ -21,8 +23,20 @@ export function formatDistance(meters: number) {
 }
 
 export function formatStageMetrics(
-  durationMinutes: number,
-  distanceMeters: number,
+  durationMinutes: number | null,
+  distanceMeters: number | null,
 ) {
-  return `${formatDuration(durationMinutes)} · ${formatDistance(distanceMeters)}`;
+  if (durationMinutes && distanceMeters) {
+    return `${formatDuration(durationMinutes)} · ${formatDistance(distanceMeters)}`;
+  }
+
+  if (distanceMeters) {
+    return formatDistance(distanceMeters);
+  }
+
+  if (durationMinutes) {
+    return formatDuration(durationMinutes);
+  }
+
+  return "metrics unavailable";
 }

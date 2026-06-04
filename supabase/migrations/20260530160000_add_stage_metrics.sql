@@ -38,7 +38,3 @@ join "public"."lodges" as to_lodge
   on to_lodge.name = seeded.to_name
 where stage.from_lodge_id = from_lodge.id
   and stage.to_lodge_id = to_lodge.id;
-
-alter table "public"."stages"
-  alter column "duration" set not null,
-  alter column "distance" set not null;
