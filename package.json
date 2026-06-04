@@ -13,7 +13,8 @@
     "check": "astro -- check",
     "db:types": "supabase gen types typescript --local --schema public > src/lib/database.types.ts",
     "db:reset": "supabase db reset",
-    "db:migrate": "supabase migration up"
+    "db:migrate": "supabase migration up",
+    "db:deploy": "supabase db push"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.9",
