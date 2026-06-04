@@ -2,8 +2,8 @@ import { createServerClient, parseCookieHeader } from "@supabase/ssr";
 import type { APIContext } from "astro";
 import type { Database } from "./database.types";
 
-const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
-const supabaseKey = import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+const supabaseUrl = import.meta.env.SUPABASE_URL;
+const supabaseKey = import.meta.env.SUPABASE_KEY;
 
 export type SupabaseContext = Pick<APIContext, "request" | "cookies">;
 
