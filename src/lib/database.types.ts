@@ -14,6 +14,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          image_path: string | null
           name: string
           slug: string
         }
@@ -21,6 +22,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          image_path?: string | null
           name: string
           slug: string
         }
@@ -28,6 +30,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          image_path?: string | null
           name?: string
           slug?: string
         }
@@ -35,22 +38,22 @@ export type Database = {
       }
       stages: {
         Row: {
-          distance: number
-          duration: number
+          distance: number | null
+          duration: number | null
           from_lodge_id: string
           id: string
           to_lodge_id: string
         }
         Insert: {
-          distance: number
-          duration: number
+          distance?: number | null
+          duration?: number | null
           from_lodge_id: string
           id?: string
           to_lodge_id: string
         }
         Update: {
-          distance?: number
-          duration?: number
+          distance?: number | null
+          duration?: number | null
           from_lodge_id?: string
           id?: string
           to_lodge_id?: string

@@ -10,6 +10,15 @@ import { pageContainer } from "../../styles/layout";
 const slug = Astro.params.slug ?? "";
 const lodge = await getLodgeBySlug(Astro, slug);
 
+const imageBaseUrl = "/storage/v1/object/public/lodge_images/";
+
+const lodgeImageUrl = lodge?.image_path
+  && new URL(
+      `${imageBaseUrl}${lodge.image_path}`,
+      import.meta.env.SUPABASE_URL,
+    ).toString()
+  ;
+
 if (!lodge) {
   Astro.response.status = 404;
 }
@@ -34,6 +43,7 @@ const neighbouringLodges =
         <>
           <h1>{lodge.name}</h1>
           {lodge.description && <p>{lodge.description}</p>}
+          {lodgeImageUrl && <img src={lodgeImageUrl} alt={lodge.name} />}
           {neighbouringLodges.length > 0 && (
             <>
               <h2>Neighbouring Lodges</h2>
