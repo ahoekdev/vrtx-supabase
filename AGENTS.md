@@ -6,7 +6,7 @@ Work rules:
 
 - Prefer the repo's existing patterns before introducing new abstractions.
 - Keep styling changes aligned with the repo's Panda CSS conventions.
-- Verify changes with `npm run check` and `npm run build` when relevant.
+- Verify changes with `npm run check` when relevant.
 - Do not rewrite unrelated files or clean up user changes unless the task requires it.
 
 Panda-specific work:
