@@ -9,6 +9,9 @@ Work rules:
 - Verify changes with `npm run check` when relevant.
 - Do not rewrite unrelated files or clean up user changes unless the task requires it.
 
+UI work:
+- When adding new features to the UI, do not just add random styling. Keep it clean and just add the HTML and JS if needed.
+
 Panda-specific work:
 
 - Use the Panda skill and Panda's official docs as the source of truth.
