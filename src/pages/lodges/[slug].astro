@@ -5,6 +5,7 @@ import { getLodgeBySlug } from "../../lib/api/lodges/getLodgeBySlug";
 import { getStages } from "../../lib/api/stages/getStages";
 import { fetchTourVariants } from "../../lib/api/tours/fetchTourVariants";
 import { convertStagesToNeighbourLodges } from "../../lib/utils/neighbourLodges";
+import { pageContainer } from "../../styles/layout";
 
 const slug = Astro.params.slug ?? "";
 const lodge = await getLodgeBySlug(Astro, slug);
@@ -27,7 +28,7 @@ const neighbouringLodges =
 ---
 
 <SiteLayout>
-  <div class="page-container">
+  <div class={pageContainer}>
     {
       lodge ? (
         <>

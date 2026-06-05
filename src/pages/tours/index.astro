@@ -2,12 +2,13 @@
 import SiteLayout from "../../layouts/SiteLayout.astro";
 import TourList from "../../components/server/TourList.astro";
 import { fetchTourVariants } from "../../lib/api/tours/fetchTourVariants";
+import { pageContainer } from "../../styles/layout";
 
 const tours = await fetchTourVariants(Astro);
 ---
 
 <SiteLayout>
-  <div class="page-container">
+  <div class={pageContainer}>
     <h1>Tours</h1>
     <TourList tours={tours} />
   </div>

@@ -16,11 +16,6 @@ const globalCss = defineGlobalStyles({
   body: {
     ...bodyTypography,
   },
-  ".page-container": {
-    width: "min(100% - 2rem, 1280px)",
-    marginInline: "auto",
-    containerType: "inline-size",
-  },
   h1: {
     fontSize: "2rem",
     marginTop: "0.5rem",

@@ -5,6 +5,7 @@ import TourList from "../../components/server/TourList.astro";
 import { getLodges } from "../../lib/api/lodges/getLodges";
 import { getStages } from "../../lib/api/stages/getStages";
 import { fetchTourVariants } from "../../lib/api/tours/fetchTourVariants";
+import { pageContainer } from "../../styles/layout";
 
 const [lodges, stages, tours] = await Promise.all([
   getLodges(Astro, { limit: 5 }),
@@ -14,7 +15,7 @@ const [lodges, stages, tours] = await Promise.all([
 ---
 
 <SiteLayout>
-  <div class="page-container">
+  <div class={pageContainer}>
     <h1>Explore</h1>
     <section>
       <div class="section-header">

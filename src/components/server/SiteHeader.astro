@@ -1,4 +1,6 @@
 ---
+import { pageContainer } from "../../styles/layout";
+
 interface NavItem {
   href: string;
   label: string;
@@ -18,7 +20,7 @@ const navEnd: NavItem[] = [
 ---
 
 <header>
-  <nav class="page-container">
+  <nav class={pageContainer}>
     {
       [navStart, navEnd].map((n) => (
         <ul>

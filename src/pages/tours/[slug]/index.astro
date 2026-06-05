@@ -4,6 +4,7 @@ import TourContent from "../../../components/server/TourContent.astro";
 import { getTourBySlug } from "../../../lib/api/tours/getTourBySlug";
 import { getTourVariantStagesByTourVariantId } from "../../../lib/api/tours/getTourVariantStagesByTourVariantId";
 import { getTourVariantsByTourId } from "../../../lib/api/tours/getTourVariantsByTourId";
+import { pageContainer } from "../../../styles/layout";
 
 const slug = Astro.params.slug ?? "";
 const tour = await getTourBySlug(Astro, slug);
@@ -23,7 +24,7 @@ const primaryVariantStages = primaryVariant
 ---
 
 <SiteLayout>
-  <div class="page-container">
+  <div class={pageContainer}>
     {
       tour ? (
         primaryVariant ? (

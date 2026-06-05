@@ -5,6 +5,7 @@ import { getTourBySlug } from "../../../lib/api/tours/getTourBySlug";
 import { getTourVariantBySlug } from "../../../lib/api/tours/getTourVariantBySlug";
 import { getTourVariantStagesByTourVariantId } from "../../../lib/api/tours/getTourVariantStagesByTourVariantId";
 import { getTourVariantsByTourId } from "../../../lib/api/tours/getTourVariantsByTourId";
+import { pageContainer } from "../../../styles/layout";
 
 const tourSlug = Astro.params.slug ?? "";
 const variantSlug = Astro.params.variantSlug ?? "";
@@ -28,7 +29,7 @@ const [stages, variants] = await Promise.all([
 ---
 
 <SiteLayout>
-  <div class="page-container">
+  <div class={pageContainer}>
     {
       tour && variant ? (
         <TourContent
