@@ -1,7 +1,14 @@
 ---
 import SiteLayout from "../../../layouts/SiteLayout.astro";
 import { LoginForm } from "../../../components/client/LoginForm";
+import { createClient } from "../../../lib/supabase";
 import { pageContainer } from "../../../styles/layout";
+
+const { data } = await createClient(Astro).auth.getUser();
+
+if (data.user) {
+  return Astro.redirect("/");
+}
 ---
 
 <SiteLayout>
