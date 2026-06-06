@@ -1,5 +1,9 @@
 ---
+import { createClient } from "../../lib/supabase";
 import { pageContainer } from "../../styles/layout";
+
+const { data } = await createClient(Astro).auth.getUser();
+const isLoggedIn = Boolean(data.user);
 
 interface NavItem {
   href: string;
@@ -21,19 +25,26 @@ const navEnd: NavItem[] = [
 
 <header>
   <nav class={pageContainer}>
-    {
-      [navStart, navEnd].map((n) => (
-        <ul>
-          {n.map(({ href, label, className }) => (
-            <li>
-              <a href={href} class={className}>
-                {label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      ))
-    }
+    <ul>
+      {navStart.map(({ href, label, className }) => (
+        <li>
+          <a href={href} class={className}>
+            {label}
+          </a>
+        </li>
+      ))}
+    </ul>
+    {isLoggedIn ? null : (
+      <ul>
+        {navEnd.map(({ href, label, className }) => (
+          <li>
+            <a href={href} class={className}>
+              {label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
   </nav>
 </header>
 
