@@ -1,7 +1,4 @@
-import {
-  defineConfig,
-  defineGlobalStyles,
-} from "@pandacss/dev";
+import { defineConfig, defineGlobalStyles } from "@pandacss/dev";
 
 const bodyTypography = {
   fontFamily:
@@ -18,20 +15,14 @@ const globalCss = defineGlobalStyles({
   },
   h1: {
     fontSize: "2rem",
-    marginTop: "0.5rem",
-    marginBottom: "1.5rem",
     ...headingTypography,
   },
   h2: {
     fontSize: "1.5rem",
-    marginTop: "0.5rem",
-    marginBottom: "0.25rem",
     ...headingTypography,
   },
   h3: {
     fontSize: "1.25rem",
-    marginTop: "0.5rem",
-    marginBottom: "0.25rem",
     ...headingTypography,
   },
 });

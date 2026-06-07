@@ -62,14 +62,16 @@ const neighbouringLodges =
     {
       lodge ? (
         <>
-          <h1>{lodge.name}</h1>
-          {isLoggedIn && (
-            <LodgeFavoriteButton
-              client:load
-              lodgeId={lodge.id}
-              initialIsFavorite={initialIsFavorite}
-            />
-          )}
+          <div class="heading-container">
+              <h1>{lodge.name}</h1>
+              {isLoggedIn && (
+                <LodgeFavoriteButton
+                  client:load
+                  lodgeId={lodge.id}
+                  initialIsFavorite={initialIsFavorite}
+                />
+              )}
+          </div>
           {lodge.description && <p>{lodge.description}</p>}
           {lodgeImageUrl && <img src={lodgeImageUrl} alt={lodge.name} />}
           {neighbouringLodges.length > 0 && (
@@ -100,3 +102,11 @@ const neighbouringLodges =
     }
   </div>
 </SiteLayout>
+
+<style>
+  .heading-container {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+</style>
