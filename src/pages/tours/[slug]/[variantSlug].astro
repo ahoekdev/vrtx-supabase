@@ -3,6 +3,7 @@ import SiteLayout from "../../../layouts/SiteLayout.astro";
 import TourContent from "../../../components/server/TourContent.astro";
 import { getTourBySlug } from "../../../lib/api/tours/getTourBySlug";
 import { getTourVariantBySlug } from "../../../lib/api/tours/getTourVariantBySlug";
+import { getFavoriteStateForTourVariant } from "../../../lib/api/tours/getFavoriteStateForTourVariant";
 import { getTourVariantStagesByTourVariantId } from "../../../lib/api/tours/getTourVariantStagesByTourVariantId";
 import { getTourVariantsByTourId } from "../../../lib/api/tours/getTourVariantsByTourId";
 import { pageContainer } from "../../../styles/layout";
@@ -10,6 +11,8 @@ import { pageContainer } from "../../../styles/layout";
 const tourSlug = Astro.params.slug ?? "";
 const variantSlug = Astro.params.variantSlug ?? "";
 const tour = await getTourBySlug(Astro, tourSlug);
+type TourStages = Awaited<ReturnType<typeof getTourVariantStagesByTourVariantId>>;
+type TourVariants = Awaited<ReturnType<typeof getTourVariantsByTourId>>;
 
 if (!tour) {
   Astro.response.status = 404;
@@ -22,10 +25,24 @@ if (!variant) {
   Astro.response.status = 404;
 }
 
-const [stages, variants] = await Promise.all([
-  variant ? getTourVariantStagesByTourVariantId(Astro, variant.id) : [],
-  tour ? getTourVariantsByTourId(Astro, tour.id) : [],
-]);
+let stages: TourStages = [];
+let variants: TourVariants = [];
+let initialIsFavorite = false;
+
+if (variant && tour) {
+  if (Astro.locals.isLoggedIn) {
+    [stages, variants, initialIsFavorite] = await Promise.all([
+      getTourVariantStagesByTourVariantId(Astro, variant.id),
+      getTourVariantsByTourId(Astro, tour.id),
+      getFavoriteStateForTourVariant(Astro, variant.id),
+    ]);
+  } else {
+    [stages, variants] = await Promise.all([
+      getTourVariantStagesByTourVariantId(Astro, variant.id),
+      getTourVariantsByTourId(Astro, tour.id),
+    ]);
+  }
+}
 ---
 
 <SiteLayout>
@@ -34,6 +51,8 @@ const [stages, variants] = await Promise.all([
       tour && variant ? (
         <TourContent
           tour={{ name: tour.name, slug: tour.slug }}
+          isLoggedIn={Astro.locals.isLoggedIn}
+          initialIsFavorite={initialIsFavorite}
           variants={variants}
           selectedVariant={variant}
           stages={stages}

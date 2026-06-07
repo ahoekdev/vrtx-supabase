@@ -1,4 +1,5 @@
 ---
+import { TourVariantFavoriteButton } from "../client/TourVariantFavoriteButton";
 import StageList from "./StageList.astro";
 
 type TourVariant = {
@@ -33,12 +34,21 @@ interface Props {
     name: string;
     slug: string;
   };
+  isLoggedIn?: boolean;
+  initialIsFavorite?: boolean;
   variants: TourVariant[];
   selectedVariant: TourVariant;
   stages: StageRow[];
 }
 
-const { tour, variants, selectedVariant, stages } = Astro.props as Props;
+const {
+  tour,
+  isLoggedIn = false,
+  initialIsFavorite = false,
+  variants,
+  selectedVariant,
+  stages,
+} = Astro.props as Props;
 
 const hasMultipleVariants = variants.length > 1;
 
@@ -56,7 +66,20 @@ const normalizedStages = stages.flatMap((row) => {
 ---
 
 <section class="tour-content">
-  <h1>{tour.name}</h1>
+  {hasMultipleVariants ? (
+    <h1>{tour.name}</h1>
+  ) : (
+    <div class="heading-container">
+      <h1>{tour.name}</h1>
+      {isLoggedIn && (
+        <TourVariantFavoriteButton
+          client:load
+          tourVariantId={selectedVariant.id}
+          initialIsFavorite={initialIsFavorite}
+        />
+      )}
+    </div>
+  )}
   {
     hasMultipleVariants && (
       <nav class="variant-nav" aria-label="Tour variants">
@@ -79,7 +102,18 @@ const normalizedStages = stages.flatMap((row) => {
       </nav>
     )
   }
-  {hasMultipleVariants && <h2>{selectedVariant.label}</h2>}
+  {hasMultipleVariants && (
+    <div class="heading-container">
+      <h2>{selectedVariant.label}</h2>
+      {isLoggedIn && (
+        <TourVariantFavoriteButton
+          client:load
+          tourVariantId={selectedVariant.id}
+          initialIsFavorite={initialIsFavorite}
+        />
+      )}
+    </div>
+  )}
   {selectedVariant.description && <p>{selectedVariant.description}</p>}
   <StageList stages={normalizedStages} />
 </section>
@@ -88,6 +122,12 @@ const normalizedStages = stages.flatMap((row) => {
   .tour-content {
     display: grid;
     gap: 0.75rem;
+  }
+
+  .heading-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .variant-nav {

@@ -199,6 +199,35 @@ export type Database = {
           },
         ]
       }
+      user_tour_variant_favorites: {
+        Row: {
+          created_at: string
+          id: string
+          tour_variant_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          tour_variant_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          tour_variant_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_tour_variant_favorites_tour_variant_id_fkey"
+            columns: ["tour_variant_id"]
+            isOneToOne: false
+            referencedRelation: "tour_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
