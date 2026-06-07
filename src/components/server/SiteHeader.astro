@@ -1,5 +1,6 @@
 ---
 import { pageContainer } from "../../styles/layout";
+import { SignOutButton } from "../client/SignOutButton";
 
 const isLoggedIn = Astro.locals.isLoggedIn;
 
@@ -32,17 +33,21 @@ const navEnd: NavItem[] = [
         </li>
       ))}
     </ul>
-    {isLoggedIn ? null : (
-      <ul>
-        {navEnd.map(({ href, label, className }) => (
+    <ul>
+      {isLoggedIn ? (
+        <li>
+          <SignOutButton client:load className="auth-button" />
+        </li>
+      ) : (
+        navEnd.map(({ href, label, className }) => (
           <li>
             <a href={href} class={className}>
               {label}
             </a>
           </li>
-        ))}
-      </ul>
-    )}
+        ))
+      )}
+    </ul>
   </nav>
 </header>
 
@@ -61,6 +66,20 @@ const navEnd: NavItem[] = [
         display: flex;
         gap: 1rem;
         align-items: center;
+      }
+
+      .auth-button {
+        appearance: none;
+        background: none;
+        border: 0;
+        padding: 0;
+        color: inherit;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .auth-button:hover {
+        text-decoration: underline;
       }
 
       .home {
