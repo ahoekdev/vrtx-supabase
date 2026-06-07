@@ -4,10 +4,7 @@ import { handleError } from "../utils";
 
 export const setFavoriteAction = defineAction({
   accept: "json",
-  async handler(
-    input: { lodgeId: string; isFavorite: boolean },
-    context,
-  ) {
+  async handler(input: { lodgeId: string; isFavorite: boolean }, context) {
     try {
       const client = createClient(context);
       const { data: userData, error: userError } = await client.auth.getUser();

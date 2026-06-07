@@ -20,6 +20,10 @@ const navEnd: NavItem[] = [
   { href: "/auth/register", label: "Sign Up" },
   { href: "/auth/login", label: "Sign In" },
 ];
+
+const loggedInNavEnd: NavItem[] = [
+  { href: "/profile/favorites", label: "Favorites" },
+];
 ---
 
 <header>
@@ -35,9 +39,18 @@ const navEnd: NavItem[] = [
     </ul>
     <ul>
       {isLoggedIn ? (
-        <li>
-          <SignOutButton client:load className="auth-button" />
-        </li>
+        <>
+          {loggedInNavEnd.map(({ href, label, className }) => (
+            <li>
+              <a href={href} class={className}>
+                {label}
+              </a>
+            </li>
+          ))}
+          <li>
+            <SignOutButton client:load className="auth-button" />
+          </li>
+        </>
       ) : (
         navEnd.map(({ href, label, className }) => (
           <li>

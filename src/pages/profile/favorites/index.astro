@@ -1,0 +1,19 @@
+---
+import { FavoriteLodgeList } from "../../../components/client/FavoriteLodgeList";
+import SiteLayout from "../../../layouts/SiteLayout.astro";
+import { getFavoriteLodges } from "../../../lib/api/lodges/getFavoriteLodges";
+import { pageContainer } from "../../../styles/layout";
+
+if (!Astro.locals.isLoggedIn) {
+  return Astro.redirect("/auth/login");
+}
+
+const favoriteLodges = await getFavoriteLodges(Astro);
+---
+
+<SiteLayout>
+  <div class={pageContainer}>
+    <h1>Favorite Lodges</h1>
+    <FavoriteLodgeList client:load initialLodges={favoriteLodges} />
+  </div>
+</SiteLayout>
