@@ -24,7 +24,17 @@ from (
     ('Pforzheimer Hütte', 'Schweinfurter Hütte', 270, 7800),
     ('Schweinfurter Hütte', 'Dortmunder Hütte', 330, 9300),
     ('Winnebachseehütte', 'Pforzheimer Hütte', 360, 10000),
-    ('Dortmunder Hütte', 'Peter-Anich-Hütte', 300, 8500)
+    ('Dortmunder Hütte', 'Peter-Anich-Hütte', 300, 8500),
+    ('Tuxerjochhaus', 'Friesenberghaus', 240, 8400),
+    ('Olpererhütte', 'Pfitscherjochhaus', 180, 8700),
+    ('Pfitscherjochhaus', 'Landshuter Europahütte', 180, 8200),
+    ('Landshuter Europahütte', 'Geraer Hütte', 420, 11600),
+    ('Geraer Hütte', 'Tuxerjochhaus', 240, 9900),
+    ('Patscherkofel Schutzhaus', 'Glungezer-Hütte', 210, 9700),
+    ('Glungezer-Hütte', 'Lizumer Hütte', 450, 14800),
+    ('Lizumer Hütte', 'Weidener Hütte', 295, 12300),
+    ('Weidener Hütte', 'Rastkogelhütte', 330, 12500),
+    ('Rastkogelhütte', 'Kellerjoch-Hütte', 320, 13800)
 ) as stage_pairs(from_name, to_name, duration, distance)
 join public.lodges as from_lodge
   on from_lodge.name = stage_pairs.from_name

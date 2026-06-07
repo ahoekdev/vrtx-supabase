@@ -24,4 +24,14 @@ values
   ('Dortmunder Hütte', 'All-season hut in Kühtai near the Kühtaisattel, used for tours and winter sports.', null),
   ('Winnebachseehütte', 'Lakeside hut above Gries in Sulztal, reached past a waterfall on a family-friendly trail.', null),
   ('Bielefelder Hütte', 'Sociable hut under the Acherkogel with a sunny terrace and a relaxed mountain stop vibe.', null),
-  ('Peter-Anich-Hütte', 'Small seasonal hut and day-hike base in the northern Stubai Alps near Telfs.', null);
+  ('Peter-Anich-Hütte', 'Small seasonal hut and day-hike base in the northern Stubai Alps near Telfs.', null),
+  ('Geraer Hütte', 'Classic Zillertal base at the end of the Valsertal and a key stop on the Peter-Habeler-Runde.', null),
+  ('Tuxerjochhaus', 'High hut below the Tuxer Joch with wide views and a central position on the Peter-Habeler-Runde.', null),
+  ('Pfitscherjochhaus', 'High mountain hut on the border ridge between the Zillertal and South Tyrol, reached on the Peter-Habeler-Runde.', null),
+  ('Landshuter Europahütte', 'Border hut on the Tuxer Hauptkamm and the western anchor of the Peter-Habeler-Runde.', null),
+  ('Patscherkofel Schutzhaus', 'Start hut on the Inntaler Höhenweg above Innsbruck and a gateway to the Zirbenweg.', null),
+  ('Glungezer-Hütte', 'Highest hut on the Inntaler Höhenweg and a landmark stop above the Inn Valley.', null),
+  ('Lizumer Hütte', 'Remote hut in the Wattentaler Lizum and the next stop after the Glungezer section.', null),
+  ('Weidener Hütte', 'Friendly hut on the Nafingalm and a central stop on the Inntaler Höhenweg.', null),
+  ('Rastkogelhütte', 'Panoramic hut beneath the Rastkogel and the fourth hut on the Inntaler Höhenweg.', null),
+  ('Kellerjoch-Hütte', 'Summit-side hut above Schwaz that closes the Inntaler Höhenweg.', null);
