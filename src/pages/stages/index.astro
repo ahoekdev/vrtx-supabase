@@ -2,12 +2,13 @@
 import SiteLayout from "../../layouts/SiteLayout.astro";
 import StageList from "../../components/server/StageList.astro";
 import { getStages } from "../../lib/api/stages/getStages";
+import { pageContainer } from "../../styles/layout";
 
 const stages = await getStages(Astro);
 ---
 
 <SiteLayout>
-  <div class="page-container">
+  <div class={pageContainer}>
     <h1>Stages</h1>
     <StageList stages={stages} />
   </div>

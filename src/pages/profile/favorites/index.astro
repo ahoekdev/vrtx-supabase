@@ -1,0 +1,30 @@
+---
+import { FavoriteLodgeList } from "../../../components/client/FavoriteLodgeList";
+import { FavoriteTourVariantList } from "../../../components/client/FavoriteTourVariantList";
+import SiteLayout from "../../../layouts/SiteLayout.astro";
+import { getFavoriteLodges } from "../../../lib/api/lodges/getFavoriteLodges";
+import { getFavoriteTourVariants } from "../../../lib/api/tours/getFavoriteTourVariants";
+import { pageContainer } from "../../../styles/layout";
+
+if (!Astro.locals.isLoggedIn) {
+  return Astro.redirect("/auth/login");
+}
+
+const [favoriteLodges, favoriteTourVariants] = await Promise.all([
+  getFavoriteLodges(Astro),
+  getFavoriteTourVariants(Astro),
+]);
+---
+
+<SiteLayout>
+  <div class={pageContainer}>
+    <h1>Favorites</h1>
+    <h2>Lodges</h2>
+    <FavoriteLodgeList client:load initialLodges={favoriteLodges} />
+    <h2>Tours</h2>
+    <FavoriteTourVariantList
+      client:load
+      initialVariants={favoriteTourVariants}
+    />
+  </div>
+</SiteLayout>

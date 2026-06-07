@@ -24,7 +24,7 @@ export function LoginForm({ type }: LoginFormData) {
       return;
     }
 
-    setMessage("Logged in.");
+    window.location.assign("/");
   }
 
   async function handleRegister(credentials: SignUpWithPasswordCredentials) {

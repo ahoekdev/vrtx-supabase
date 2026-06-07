@@ -2,11 +2,14 @@
 import SiteLayout from "../../../layouts/SiteLayout.astro";
 import TourContent from "../../../components/server/TourContent.astro";
 import { getTourBySlug } from "../../../lib/api/tours/getTourBySlug";
+import { getFavoriteStateForTourVariant } from "../../../lib/api/tours/getFavoriteStateForTourVariant";
 import { getTourVariantStagesByTourVariantId } from "../../../lib/api/tours/getTourVariantStagesByTourVariantId";
 import { getTourVariantsByTourId } from "../../../lib/api/tours/getTourVariantsByTourId";
+import { pageContainer } from "../../../styles/layout";
 
 const slug = Astro.params.slug ?? "";
 const tour = await getTourBySlug(Astro, slug);
+type TourStages = Awaited<ReturnType<typeof getTourVariantStagesByTourVariantId>>;
 
 if (!tour) {
   Astro.response.status = 404;
@@ -17,18 +20,33 @@ const variants = tour ? await getTourVariantsByTourId(Astro, tour.id) : [];
 const primaryVariant =
   variants.find(({ is_primary }) => is_primary) ?? variants[0] ?? null;
 
-const primaryVariantStages = primaryVariant
-  ? await getTourVariantStagesByTourVariantId(Astro, primaryVariant.id)
-  : [];
+let primaryVariantStages: TourStages = [];
+let initialIsFavorite = false;
+
+if (primaryVariant) {
+  if (Astro.locals.isLoggedIn) {
+    [primaryVariantStages, initialIsFavorite] = await Promise.all([
+      getTourVariantStagesByTourVariantId(Astro, primaryVariant.id),
+      getFavoriteStateForTourVariant(Astro, primaryVariant.id),
+    ]);
+  } else {
+    primaryVariantStages = await getTourVariantStagesByTourVariantId(
+      Astro,
+      primaryVariant.id,
+    );
+  }
+}
 ---
 
 <SiteLayout>
-  <div class="page-container">
+  <div class={pageContainer}>
     {
       tour ? (
         primaryVariant ? (
           <TourContent
             tour={{ name: tour.name, slug: tour.slug }}
+            isLoggedIn={Astro.locals.isLoggedIn}
+            initialIsFavorite={initialIsFavorite}
             variants={variants}
             selectedVariant={primaryVariant}
             stages={primaryVariantStages}

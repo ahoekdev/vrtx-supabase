@@ -2,6 +2,7 @@
 import SiteLayout from "../../../layouts/SiteLayout.astro";
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { createClient } from "../../../lib/supabase";
+import { pageContainer } from "../../../styles/layout";
 
 const requestUrl = new URL(Astro.request.url);
 
@@ -15,7 +16,7 @@ if (token_hash && type) {
   });
 
   if (!error) {
-    return Astro.redirect("/admin");
+    return Astro.redirect("/");
   }
 }
 
@@ -23,7 +24,7 @@ return Astro.redirect("/auth/login");
 ---
 
 <SiteLayout>
-  <div class="page-container">
+  <div class={pageContainer}>
     <p>Verifying your email...</p>
   </div>
 </SiteLayout>

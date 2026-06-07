@@ -14,6 +14,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          image_path: string | null
           name: string
           slug: string
         }
@@ -21,6 +22,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          image_path?: string | null
           name: string
           slug: string
         }
@@ -28,6 +30,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          image_path?: string | null
           name?: string
           slug?: string
         }
@@ -35,22 +38,22 @@ export type Database = {
       }
       stages: {
         Row: {
-          distance: number
-          duration: number
+          distance: number | null
+          duration: number | null
           from_lodge_id: string
           id: string
           to_lodge_id: string
         }
         Insert: {
-          distance: number
-          duration: number
+          distance?: number | null
+          duration?: number | null
           from_lodge_id: string
           id?: string
           to_lodge_id: string
         }
         Update: {
-          distance?: number
-          duration?: number
+          distance?: number | null
+          duration?: number | null
           from_lodge_id?: string
           id?: string
           to_lodge_id?: string
@@ -163,6 +166,64 @@ export type Database = {
             columns: ["tour_id"]
             isOneToOne: false
             referencedRelation: "tour"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_lodge_favorites: {
+        Row: {
+          created_at: string
+          id: string
+          lodge_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lodge_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lodge_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_lodge_favorites_lodge_id_fkey"
+            columns: ["lodge_id"]
+            isOneToOne: false
+            referencedRelation: "lodges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_tour_variant_favorites: {
+        Row: {
+          created_at: string
+          id: string
+          tour_variant_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          tour_variant_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          tour_variant_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_tour_variant_favorites_tour_variant_id_fkey"
+            columns: ["tour_variant_id"]
+            isOneToOne: false
+            referencedRelation: "tour_variants"
             referencedColumns: ["id"]
           },
         ]

@@ -1,24 +1,55 @@
 ---
 import SiteLayout from "../../layouts/SiteLayout.astro";
+import { LodgeFavoriteButton } from "../../components/client/LodgeFavoriteButton";
 import TourList from "../../components/server/TourList.astro";
 import { getLodgeBySlug } from "../../lib/api/lodges/getLodgeBySlug";
+import { getFavoriteStateForLodge } from "../../lib/api/lodges/getFavoriteStateForLodge";
 import { getStages } from "../../lib/api/stages/getStages";
 import { fetchTourVariants } from "../../lib/api/tours/fetchTourVariants";
 import { convertStagesToNeighbourLodges } from "../../lib/utils/neighbourLodges";
+import { pageContainer } from "../../styles/layout";
 
 const slug = Astro.params.slug ?? "";
 const lodge = await getLodgeBySlug(Astro, slug);
+const isLoggedIn = Astro.locals.isLoggedIn;
+type LodgeStages = Awaited<ReturnType<typeof getStages>>;
+type LodgeTours = Awaited<ReturnType<typeof fetchTourVariants>>;
+
+const imageBaseUrl = "/storage/v1/object/public/lodge_images/";
+
+const lodgeImageUrl = lodge?.image_path
+  && new URL(
+      `${imageBaseUrl}${lodge.image_path}`,
+      import.meta.env.SUPABASE_URL,
+    ).toString()
+  ;
 
 if (!lodge) {
   Astro.response.status = 404;
 }
 
-const [stages = [], tours = []] = lodge
-  ? await Promise.all([
+let initialIsFavorite = false;
+let stages: LodgeStages = [];
+let tours: LodgeTours = [];
+
+if (lodge) {
+  if (isLoggedIn) {
+    const [fetchedStages, fetchedTours, favoriteState] = await Promise.all([
       getStages(Astro, { lodgeId: lodge.id }),
       fetchTourVariants(Astro, { lodgeId: lodge.id }),
-    ])
-  : [];
+      getFavoriteStateForLodge(Astro, lodge.id),
+    ]);
+
+    stages = fetchedStages;
+    tours = fetchedTours;
+    initialIsFavorite = favoriteState;
+  } else {
+    [stages, tours] = await Promise.all([
+      getStages(Astro, { lodgeId: lodge.id }),
+      fetchTourVariants(Astro, { lodgeId: lodge.id }),
+    ]);
+  }
+}
 
 const neighbouringLodges =
   lodge && stages.length > 0
@@ -27,12 +58,22 @@ const neighbouringLodges =
 ---
 
 <SiteLayout>
-  <div class="page-container">
+  <div class={pageContainer}>
     {
       lodge ? (
         <>
-          <h1>{lodge.name}</h1>
+          <div class="heading-container">
+              <h1>{lodge.name}</h1>
+              {isLoggedIn && (
+                <LodgeFavoriteButton
+                  client:load
+                  lodgeId={lodge.id}
+                  initialIsFavorite={initialIsFavorite}
+                />
+              )}
+          </div>
           {lodge.description && <p>{lodge.description}</p>}
+          {lodgeImageUrl && <img src={lodgeImageUrl} alt={lodge.name} />}
           {neighbouringLodges.length > 0 && (
             <>
               <h2>Neighbouring Lodges</h2>
@@ -61,3 +102,11 @@ const neighbouringLodges =
     }
   </div>
 </SiteLayout>
+
+<style>
+  .heading-container {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+</style>
