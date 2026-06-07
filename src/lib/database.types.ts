@@ -170,6 +170,35 @@ export type Database = {
           },
         ]
       }
+      user_lodge_favorites: {
+        Row: {
+          created_at: string
+          id: string
+          lodge_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lodge_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lodge_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_lodge_favorites_lodge_id_fkey"
+            columns: ["lodge_id"]
+            isOneToOne: false
+            referencedRelation: "lodges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
