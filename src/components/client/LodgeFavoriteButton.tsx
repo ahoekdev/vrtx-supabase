@@ -11,41 +11,31 @@ export function LodgeFavoriteButton({
   lodgeId,
   initialIsFavorite,
 }: LodgeFavoriteButtonProps) {
-  const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [state, setState] = useState({
+    isFavorite: initialIsFavorite,
+    isSubmitting: false,
+  });
 
-  async function handleToggle() {
-    if (isSubmitting) {
-      return;
+  async function handleToggle(isFavorite: boolean) {
+    setState({ isFavorite, isSubmitting: true });
+
+    const { error } = await actions.setFavorite({ lodgeId, isFavorite });
+
+    if (error) {
+      setState({ isFavorite: !isFavorite, isSubmitting: false });
+    } else {
+      setState((prev) => ({ ...prev, isSubmitting: false }));
     }
-
-    const nextIsFavorite = !isFavorite;
-    setIsFavorite(nextIsFavorite);
-    setIsSubmitting(true);
-
-    const res = await actions.setFavorite({
-      lodgeId,
-      isFavorite: nextIsFavorite,
-    });
-
-    if (res.error) {
-      setIsFavorite(!nextIsFavorite);
-    }
-
-    setIsSubmitting(false);
   }
 
   return (
     <button
       type="button"
-      onClick={handleToggle}
-      disabled={isSubmitting}
-      className={css({
-        fontSize: "1.5rem",
-        cursor: "pointer",
-      })}
+      onClick={() => handleToggle(!state.isFavorite)}
+      disabled={state.isSubmitting}
+      className={css({ fontSize: "1.5rem", cursor: "pointer" })}
     >
-      {isFavorite ? (
+      {state.isFavorite ? (
         <i className="ri-heart-fill"></i>
       ) : (
         <i className="ri-heart-line"></i>

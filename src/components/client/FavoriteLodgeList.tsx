@@ -8,20 +8,19 @@ interface FavoriteLodgeListProps {
 }
 
 export function FavoriteLodgeList({ initialLodges }: FavoriteLodgeListProps) {
-  const [lodges, setLodges] = useState(initialLodges);
-  const [pendingIds, setPendingIds] = useState<string[]>([]);
+  const [removedIds, setRemovedIds] = useState<string[]>([]);
 
-  const filteredLodges = lodges.filter(({ id }) => !pendingIds.includes(id));
+  const filteredLodges = initialLodges.filter(
+    ({ id }) => !removedIds.includes(id),
+  );
 
   async function handleUnfavorite(lodgeId: string) {
-    setPendingIds((prev) => prev.concat(lodgeId));
+    setRemovedIds((prev) => prev.concat(lodgeId));
 
-    const res = await actions.setFavorite({ lodgeId, isFavorite: false });
+    const { error } = await actions.setFavorite({ lodgeId, isFavorite: false });
 
-    if (res.error) {
-      setPendingIds((prev) => prev.filter((id) => id !== lodgeId));
-    } else {
-      setLodges((prev) => prev.filter((lodge) => lodge.id !== lodgeId));
+    if (error) {
+      setRemovedIds((prev) => prev.filter((id) => id !== lodgeId));
     }
   }
 

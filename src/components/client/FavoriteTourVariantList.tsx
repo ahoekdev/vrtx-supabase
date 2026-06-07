@@ -10,66 +10,26 @@ interface FavoriteTourVariantListProps {
 export function FavoriteTourVariantList({
   initialVariants,
 }: FavoriteTourVariantListProps) {
-  const [variants, setVariants] = useState(initialVariants);
   const [pendingIds, setPendingIds] = useState<string[]>([]);
 
+  const filteredVariants = initialVariants.filter(
+    ({ id }) => !pendingIds.includes(id),
+  );
+
   async function handleUnfavorite(variantId: string) {
-    if (pendingIds.includes(variantId)) {
-      return;
-    }
+    setPendingIds((prev) => prev.concat(variantId));
 
-    let removedVariant: FavoriteTourVariant | undefined;
-    let removedIndex = -1;
-
-    setVariants((current) => {
-      removedIndex = current.findIndex(({ id }) => id === variantId);
-
-      if (removedIndex === -1) {
-        return current;
-      }
-
-      removedVariant = current[removedIndex];
-
-      return [
-        ...current.slice(0, removedIndex),
-        ...current.slice(removedIndex + 1),
-      ];
-    });
-
-    setPendingIds((current) =>
-      current.includes(variantId) ? current : [...current, variantId],
-    );
-
-    const res = await actions.setTourVariantFavorite({
+    const { error } = await actions.setTourVariantFavorite({
       tourVariantId: variantId,
       isFavorite: false,
     });
 
-    if (res.error && removedVariant) {
-      const variantToRestore = removedVariant;
-
-      setVariants((current) => {
-        if (current.some(({ id }) => id === variantId)) {
-          return current;
-        }
-
-        const nextIndex =
-          removedIndex < 0
-            ? current.length
-            : Math.min(removedIndex, current.length);
-
-        return [
-          ...current.slice(0, nextIndex),
-          variantToRestore,
-          ...current.slice(nextIndex),
-        ];
-      });
+    if (error) {
+      setPendingIds((prev) => prev.filter((id) => id !== variantId));
     }
-
-    setPendingIds((current) => current.filter((id) => id !== variantId));
   }
 
-  if (variants.length === 0) {
+  if (!filteredVariants.length) {
     return (
       <p>
         You have not favorited any tour variants yet.{" "}
@@ -80,47 +40,35 @@ export function FavoriteTourVariantList({
 
   return (
     <ul>
-      {variants.map((variant) => {
-        const isPending = pendingIds.includes(variant.id);
-        const href = variant.is_primary
-          ? `/tours/${variant.tour.slug}`
-          : `/tours/${variant.tour.slug}/${variant.slug}`;
-
-        return (
-          <li
-            key={variant.id}
-            className={css({
-              display: "flex",
-              alignItems: "center",
-              gap: ".5rem",
-            })}
+      {filteredVariants.map(({ id, tour, is_primary, label }) => (
+        <li
+          key={id}
+          className={css({
+            display: "flex",
+            alignItems: "center",
+            gap: ".5rem",
+          })}
+        >
+          <button
+            type="button"
+            onClick={() => handleUnfavorite(id)}
+            className={css({ cursor: "pointer" })}
           >
-            <button
-              type="button"
-              aria-label={`Remove ${variant.tour.name} (${variant.label}) from favorites`}
-              title={`Remove ${variant.tour.name} (${variant.label}) from favorites`}
-              disabled={isPending}
-              onClick={() => handleUnfavorite(variant.id)}
+            <i className="ri-heart-fill" />
+          </button>
+          <a href={`/tours/${tour.slug}${is_primary ? "" : `/${id}`}`}>
+            {tour.name}
+            <span
               className={css({
-                cursor: "pointer",
+                marginInlineStart: "0.5rem",
+                color: "#666",
               })}
             >
-              <i className="ri-heart-fill" />
-            </button>
-            <a href={href}>
-              {variant.tour.name}
-              <span
-                className={css({
-                  marginInlineStart: "0.35rem",
-                  color: "#666",
-                })}
-              >
-                ({variant.label})
-              </span>
-            </a>
-          </li>
-        );
-      })}
+              ({label})
+            </span>
+          </a>
+        </li>
+      ))}
     </ul>
   );
 }

@@ -11,17 +11,18 @@ export function TourVariantFavoriteButton({
   tourVariantId,
   initialIsFavorite,
 }: TourVariantFavoriteButtonProps) {
-  const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [state, setState] = useState({
+    isFavorite: initialIsFavorite,
+    isSubmitting: false,
+  });
 
-  async function handleToggle() {
-    if (isSubmitting) {
-      return;
-    }
-
+  async function handleToggle(isFavorite: boolean) {
     const nextIsFavorite = !isFavorite;
-    setIsFavorite(nextIsFavorite);
-    setIsSubmitting(true);
+    setState((prev) => ({
+      ...prev,
+      isFavorite: nextIsFavorite,
+      isSubmitting: true,
+    }));
 
     const res = await actions.setTourVariantFavorite({
       tourVariantId,
@@ -29,23 +30,24 @@ export function TourVariantFavoriteButton({
     });
 
     if (res.error) {
-      setIsFavorite(!nextIsFavorite);
+      setState((prev) => ({
+        ...prev,
+        isFavorite: !nextIsFavorite,
+        isSubmitting: false,
+      }));
+    } else {
+      setState((prev) => ({ ...prev, isSubmitting: false }));
     }
-
-    setIsSubmitting(false);
   }
 
   return (
     <button
       type="button"
-      onClick={handleToggle}
-      disabled={isSubmitting}
-      className={css({
-        fontSize: "1.5rem",
-        cursor: "pointer",
-      })}
+      onClick={() => handleToggle(!state.isFavorite)}
+      disabled={state.isSubmitting}
+      className={css({ fontSize: "1.5rem", cursor: "pointer" })}
     >
-      {isFavorite ? (
+      {state.isFavorite ? (
         <i className="ri-heart-fill" />
       ) : (
         <i className="ri-heart-line" />
