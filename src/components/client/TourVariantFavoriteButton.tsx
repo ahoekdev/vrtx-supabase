@@ -17,24 +17,15 @@ export function TourVariantFavoriteButton({
   });
 
   async function handleToggle(isFavorite: boolean) {
-    const nextIsFavorite = !isFavorite;
-    setState((prev) => ({
-      ...prev,
-      isFavorite: nextIsFavorite,
-      isSubmitting: true,
-    }));
+    setState({ isFavorite, isSubmitting: true });
 
     const res = await actions.setTourVariantFavorite({
       tourVariantId,
-      isFavorite: nextIsFavorite,
+      isFavorite,
     });
 
     if (res.error) {
-      setState((prev) => ({
-        ...prev,
-        isFavorite: !nextIsFavorite,
-        isSubmitting: false,
-      }));
+      setState({ isFavorite, isSubmitting: false });
     } else {
       setState((prev) => ({ ...prev, isSubmitting: false }));
     }
