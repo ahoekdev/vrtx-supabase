@@ -1,9 +1,7 @@
 ---
-import { createClient } from "../../lib/supabase";
 import { pageContainer } from "../../styles/layout";
 
-const { data } = await createClient(Astro).auth.getUser();
-const isLoggedIn = Boolean(data.user);
+const isLoggedIn = Astro.locals.isLoggedIn;
 
 interface NavItem {
   href: string;
